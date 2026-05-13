@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员成长体系平台 - 完整优化版原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        * {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .pc-window {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        
+        .chart-placeholder {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            border: 2px dashed #cbd5e1;
+        }
+        
+        .data-table {
+            font-size: 0.75rem;
+        }
+        .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .data-table td {
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .data-table tr:hover td {
+            background: #f8fafc;
+        }
+        
+        .badge-copper { background: linear-gradient(135deg, #b87333 0%, #cd853f 100%); }
+        .badge-silver { background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%); }
+        .badge-gold { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .tab-active {
+            border-bottom: 2px solid #6366f1;
+            color: #6366f1;
+            font-weight: 500;
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .page-section {
+            page-break-inside: avoid;
+            margin-bottom: 4rem;
+        }
+        
+        @media print {
+            .page-section {
+                page-break-before: always;
+            }
+            .page-section:first-child {
+                page-break-before: avoid;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-gray-100">
+
+<!-- 顶部标题 -->
+<div class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-crown text-indigo-600 text-2xl"></i>
+                <h1 class="text-2xl font-bold text-gray-900">会员成长体系平台 - 完整优化版原型</h1>
+            </div>
+            <div class="text-sm text-gray-500">PRD V1.0 全部页面平铺</div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-8 space-y-16">
+
+    <!-- ==================== 一、会员等级管理 ==================== -->
+    <section class="page-section">
+        <h2 class="text-3xl font-bold mb-8 section-title">一、会员等级管理</h2>
+        
+        <!-- 1.1 等级列表页 -->
+        <div class="pc-window">
+            <div class="flex h-[600px]">
+                <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-bold">A</div>
+                            <div>
+                                <p class="font-semibold text-sm">Admin</p>
+                                <p class="text-xs text-gray-500">超级管理员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="flex-1 py-2">
+                        <div class="px-3 mb-1 text-xs font-semibold text-gray-400 uppercase">会员管理</div>
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border-r-2 border-indigo-600">
+                            <i class="fas fa-layer-group w-4 mr-2"></i>会员等级管理
+                        </a>
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-chart-line w-4 mr-2"></i>成长值管理
+                        </a>
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-medal w-4 mr-2"></i>徽章管理
+                        </a>
+                    </nav>
+                </div>
+                <div class="flex-1 overflow-auto bg-gray-50 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-900">会员等级管理</h1>
+                            <p class="text-xs text-gray-500 mt-1">配置V1-V7等级体系及对应权益</p>
+                        </div>
+                        <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm flex items-center">
+                            <i class="fas fa-plus mr-1"></i>新增等级
+                        </button>
+                    </div>
+                    
+                    <!-- 全局降级规则 -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-sm text-gray-900">全局降级规则</h3>
+                                <p class="text-xs text-gray-500 mt-1">适用于所有等级V1-V7</p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="demote" class="text-indigo-600" checked>
+                                    <span class="text-sm text-gray-700">不降级</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="demote" class="text-indigo-600">
+                                    <span class="text-sm text-gray-700">每年1月1日重新评定</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500">等级</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500">等级名称</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500">成长值门槛</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500">可兑换商品</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500">年终大奖</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-gray-500">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-bold">V1</span></td>
+                                    <td class="px-4 py-3 font-medium">普通会员</td>
+                                    <td class="px-4 py-3">0</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">5元优惠券</span>
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">10元优惠券</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><i class="fas fa-times text-gray-400"></i></td>
+                                    <td class="px-4 py-3 space-x-2 text-xs">
+                                        <span class="text-indigo-600 cursor-pointer">编辑</span>
+                                        <span class="text-red-600 cursor-pointer">删除</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold">V2</span></td>
+                                    <td class="px-4 py-3 font-medium">青铜会员</td>
+                                    <td class="px-4 py-3">500</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">5元优惠券</span>
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">20元优惠券</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><i class="fas fa-times text-gray-400"></i></td>
+                                    <td class="px-4 py-3 space-x-2 text-xs">
+                                        <span class="text-indigo-600 cursor-pointer">编辑</span>
+                                        <span class="text-red-600 cursor-pointer">删除</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3"><span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-bold">V3</span></td>
+                                    <td class="px-4 py-3 font-medium">白银会员</td>
+                                    <td class="px-4 py-3">1,000</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">20元优惠券</span>
+                                            <span class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs">定制马克杯</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><i class="fas fa-check text-green-500"></i></td>
+                                    <td class="px-4 py-3 space-x-2 text-xs">
+                                        <span class="text-indigo-600 cursor-pointer">编辑</span>
+                                        <span class="text-red-600 cursor-pointer">删除</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3"><span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-bold">V4</span></td>
+                                    <td class="px-4 py-3 font-medium">黄金会员</td>
+                                    <td class="px-4 py-3">3,000</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">50元优惠券</span>
+                                            <span class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs">定制保温杯</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><i class="fas fa-check text-green-500"></i></td>
+                                    <td class="px-4 py-3 space-x-2 text-xs">
+                                        <span class="text-indigo-600 cursor-pointer">编辑</span>
+                                        <span class="text-red-600 cursor-pointer">删除</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3"><span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-bold">V5</span></td>
+                                    <td class="px-4 py-3 font-medium">铂金会员</td>
+                                    <td class="px-4 py-3">6,000</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">100元优惠券</span>
+                                            <span class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs">品牌背包</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><i class="fas fa-check text-green-500"></i></td>
+                                    <td class="px-4 py-3 space-x-2 text-xs">
+                                        <span class="text-indigo-600 cursor-pointer">编辑</span>
+                                        <span class="text-red-600 cursor-pointer">删除</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3"><span class="px-2 py-0.5 bg-pink-100 text-pink-700 rounded text-xs font-bold">V6</span></td>
+                                    <td class="px-4 py-3 font-medium">钻石会员</td>
+                                    <td class="px-4 py-3">12,000</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">200元优惠券</span>
+                                            <span class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs">AirPods Pro</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><i class="fas fa-check text-green-500"></i></td>
+                                    <td class="px-4 py-3 space-x-2 text-xs">
+                                        <span class="text-indigo-600 cursor-pointer">编辑</span>
+                                        <span class="text-red-600 cursor-pointer">删除</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-bold">V7</span></td>
+                                    <td class="px-4 py-3 font-medium">黑钻会员</td>
+                                    <td class="px-4 py-3">25,000</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">500元优惠券</span>
+                                            <span class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs">iPhone 16</span>
+                                            <span class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-xs">专属定制礼</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><i class="fas fa-check text-green-500"></i></td>
+                                    <td class="px-4 py-3 space-x-2 text-xs">
+                                        <span class="text-indigo-600 cursor-pointer">编辑</span>
+                                        <span class="text-red-600 cursor-pointer">删除</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1.2 新增/编辑等级弹窗 -->
+        <div class="pc-window" style="max-width: 600px; margin: 0 auto;">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-gray-900">新增会员等级</h2>
+                    <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">等级标识 <span class="text-red-500">*</span></label>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                <option>V1</option>
+                                <option>V2</option>
+                                <option>V3</option>
+                                <option>V4</option>
+                                <option>V5</option>
+                                <option>V6</option>
+                                <option>V7</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">等级名称 <span class="text-red-500">*</span></label>
+                            <input type="text" placeholder="请输入等级名称" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">成长值门槛 <span class="text-red-500">*</span></label>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" placeholder="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <span class="text-sm text-gray-500">成长值</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">达到此成长值即可自动升级至该等级</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">可兑换商品配置</label>
+                        <div class="border border-gray-200 rounded-lg p-3 space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded text-indigo-600">
+                                    <span class="text-sm">5元优惠券（满50可用）</span>
+                                </div>
+                                <span class="text-xs text-gray-500">券类</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded text-indigo-600">
+                                    <span class="text-sm">10元优惠券（满100可用）</span>
+                                </div>
+                                <span class="text-xs text-gray-500">券类</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                    <span class="text-sm">定制马克杯（价值50元）</span>
+                                </div>
+                                <span class="text-xs text-gray-500">实物</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                    <span class="text-sm">定制保温杯（价值150元）</span>
+                                </div>
+                                <span class="text-xs text-gray-500">实物</span>
+                            </div>
+                            <button class="w-full py-2 border border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-indigo-500 hover:text-indigo-600">
+                                <i class="fas fa-plus mr-1"></i>添加更多商品
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="yearEnd" class="rounded text-indigo-600">
+                        <label for="yearEnd" class="text-sm text-gray-700">参与年终大奖评选</label>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">取消</button>
+                        <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">确认保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 二、成长值管理（含兑换商品） ==================== -->
+    <section class="page-section">
+        <h2 class="text-3xl font-bold mb-8 section-title">二、成长值管理（含兑换商品配置）</h2>
+        
+        <div class="pc-window">
+            <div class="flex h-[800px]">
+                <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-bold">A</div>
+                            <div>
+                                <p class="font-semibold text-sm">Admin</p>
+                                <p class="text-xs text-gray-500">超级管理员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="flex-1 py-2">
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-layer-group w-4 mr-2"></i>会员等级管理
+                        </a>
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border-r-2 border-indigo-600">
+                            <i class="fas fa-chart-line w-4 mr-2"></i>成长值管理
+                        </a>
+                    </nav>
+                </div>
+                <div class="flex-1 overflow-auto bg-gray-50 p-6">
+                    <div class="mb-4">
+                        <h1 class="text-xl font-bold text-gray-900">成长值管理</h1>
+                        <p class="text-xs text-gray-500 mt-1">配置成长值获取渠道、使用规则及兑换商品</p>
+                    </div>
+
+                    <!-- 获取渠道配置 -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-sm">获取渠道配置</h3>
+                            <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs flex items-center">
+                                <i class="fas fa-plus mr-1"></i>增加获取渠道
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs">
+                                        <i class="fas fa-bookmark"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-xs">笔记收藏</p>
+                                        <p class="text-xs text-gray-500">社区营销 - 基础互动</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600">+<input type="number" value="5" class="w-12 mx-1 border rounded px-1 py-0.5 text-center text-sm">成长值</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-trash-alt text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs">
+                                        <i class="fas fa-pen"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-xs">写笔记</p>
+                                        <p class="text-xs text-gray-500">社区营销 - UGC内容</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600">+<input type="number" value="20" class="w-12 mx-1 border rounded px-1 py-0.5 text-center text-sm">成长值</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-trash-alt text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs">
+                                        <i class="fas fa-share-alt"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-xs">分享笔记</p>
+                                        <p class="text-xs text-gray-500">裂变营销 - 社交传播</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600">+<input type="number" value="10" class="w-12 mx-1 border rounded px-1 py-0.5 text-center text-sm">成长值</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-trash-alt text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-xs">每日签到</p>
+                                        <p class="text-xs text-gray-500">客群营销 - 日活提升</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600">+<input type="number" value="5" class="w-12 mx-1 border rounded px-1 py-0.5 text-center text-sm">成长值</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                    <button class="text-gray-400 hover:text-red-600"><i class="fas fa-trash-alt text-xs"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 使用规则配置 -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+                        <h3 class="font-semibold text-sm mb-3">成长值使用规则</h3>
+                        <div class="grid grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">券兑换比例</label>
+                                <div class="flex items-center space-x-1">
+                                    <input type="number" value="100" class="w-16 border rounded-lg px-2 py-1 text-sm">
+                                    <span class="text-xs text-gray-500">成长值 = 1张券</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">抽奖兑换</label>
+                                <div class="flex items-center space-x-1">
+                                    <input type="number" value="50" class="w-16 border rounded-lg px-2 py-1 text-sm">
+                                    <span class="text-xs text-gray-500">成长值/次</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">消费抵现比例</label>
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-xs text-gray-500">1成长值 =</span>
+                                    <input type="number" value="1" class="w-12 border rounded-lg px-2 py-1 text-sm">
+                                    <span class="text-xs text-gray-500">元</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 mb-4">
+                            <span class="text-xs font-medium text-gray-700">抵现上限：</span>
+                            <div class="flex items-center space-x-1">
+                                <span class="text-xs text-gray-500">单笔最高抵</span>
+                                <input type="number" value="30" class="w-12 border rounded-lg px-2 py-1 text-sm">
+                                <span class="text-xs text-gray-500">%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-xs font-medium text-gray-700">成长值有效期：</span>
+                            <label class="flex items-center space-x-1">
+                                <input type="radio" name="validity" class="text-indigo-600">
+                                <span class="text-xs text-gray-700">永久有效</span>
+                            </label>
+                            <label class="flex items-center space-x-1">
+                                <input type="radio" name="validity" checked class="text-indigo-600">
+                                <span class="text-xs text-gray-700">1年后自动清零</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 兑换商品库 -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-sm">兑换商品库</h3>
+                            <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs flex items-center">
+                                <i class="fas fa-plus mr-1"></i>添加商品
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3">
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="h-20 bg-gradient-to-br from-pink-400 to-red-400 flex items-center justify-center text-white text-xl">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </div>
+                                <div class="p-2">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-bold text-xs">5元优惠券</h4>
+                                        <span class="px-1.5 py-0.5 bg-green-100 text-green-700 text-xs rounded">券</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mb-1">满50可用</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-indigo-600 font-bold text-xs">100成长值</span>
+                                        <span class="text-xs text-gray-400">库存: 999</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="h-20 bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-white text-xl">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="p-2">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-bold text-xs">定制马克杯</h4>
+                                        <span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">实物</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mb-1">价值50元</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-indigo-600 font-bold text-xs">500成长值</span>
+                                        <span class="text-xs text-gray-400">库存: 200</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="h-20 bg-gradient-to-br from-yellow-400 to-orange-400 flex items-center justify-center text-white text-xl">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div class="p-2">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h4 class="font-bold text-xs">年度VIP权益</h4>
+                                        <span class="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">权益</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mb-1">专属客服</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-indigo-600 font-bold text-xs">5000成长值</span>
+                                        <span class="text-xs text-gray-400">∞</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-indigo-500 hover:text-indigo-600">
+                                <div class="text-center">
+                                    <i class="fas fa-plus text-2xl mb-1"></i>
+                                    <p class="text-xs">添加商品</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 三、徽章管理（成长值判定版） ==================== -->
+    <section class="page-section">
+        <h2 class="text-3xl font-bold mb-8 section-title">三、徽章管理（成长值判定版）</h2>
+        
+        <!-- 3.1 徽章列表页 -->
+        <div class="pc-window">
+            <div class="flex h-[700px]">
+                <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-bold">A</div>
+                            <div>
+                                <p class="font-semibold text-sm">Admin</p>
+                                <p class="text-xs text-gray-500">超级管理员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="flex-1 py-2">
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-layer-group w-4 mr-2"></i>会员等级管理
+                        </a>
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-chart-line w-4 mr-2"></i>成长值管理
+                        </a>
+                        <a class="flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border-r-2 border-indigo-600">
+                            <i class="fas fa-medal w-4 mr-2"></i>徽章管理
+                        </a>
+                    </nav>
+                </div>
+                <div class="flex-1 overflow-auto bg-gray-50 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-900">徽章管理</h1>
+                            <p class="text-xs text-gray-500 mt-1">配置5枚徽章的成长值等级规则与绑定任务</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- 徽章1：活跃分子 -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white shadow-lg">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">高活跃</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-bold text-sm">活跃分子</h3>
+                                <button class="text-indigo-600 text-xs hover:underline">编辑</button>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">绑定任务：每日签到、连续访问</p>
+                            
+                            <div class="space-y-2 mb-3">
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs font-bold">铜</div>
+                                        <span class="text-xs font-medium">铜级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">0-500成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-silver flex items-center justify-center text-gray-700 text-xs font-bold">银</div>
+                                        <span class="text-xs font-medium">银级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">501-2000成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-xs font-bold">金</div>
+                                        <span class="text-xs font-medium">金级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">2001+成长值</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 mb-1">已绑定任务：</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">每日签到</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">连续访问7天</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 徽章2：社交达人 -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">高交互</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-bold text-sm">社交达人</h3>
+                                <button class="text-indigo-600 text-xs hover:underline">编辑</button>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">绑定任务：评论互动、点赞收藏</p>
+                            
+                            <div class="space-y-2 mb-3">
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs font-bold">铜</div>
+                                        <span class="text-xs font-medium">铜级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">0-300成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-silver flex items-center justify-center text-gray-700 text-xs font-bold">银</div>
+                                        <span class="text-xs font-medium">银级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">301-1000成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-xs font-bold">金</div>
+                                        <span class="text-xs font-medium">金级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">1001+成长值</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 mb-1">已绑定任务：</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">评论笔记</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">点赞收藏</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 徽章3：利益链接者 -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                                    <i class="fas fa-link"></i>
+                                </div>
+                                <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">高链接</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-bold text-sm">利益链接者</h3>
+                                <button class="text-indigo-600 text-xs hover:underline">编辑</button>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">绑定任务：权益领取、活动参与</p>
+                            
+                            <div class="space-y-2 mb-3">
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs font-bold">铜</div>
+                                        <span class="text-xs font-medium">铜级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">0-200成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-silver flex items-center justify-center text-gray-700 text-xs font-bold">银</div>
+                                        <span class="text-xs font-medium">银级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">201-800成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-xs font-bold">金</div>
+                                        <span class="text-xs font-medium">金级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">801+成长值</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 mb-1">已绑定任务：</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">领取权益</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">参与活动</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 徽章4：传播大使 -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white shadow-lg">
+                                    <i class="fas fa-share-nodes"></i>
+                                </div>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">高分享</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-bold text-sm">传播大使</h3>
+                                <button class="text-indigo-600 text-xs hover:underline">编辑</button>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">绑定任务：内容分享、活动转发</p>
+                            
+                            <div class="space-y-2 mb-3">
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs font-bold">铜</div>
+                                        <span class="text-xs font-medium">铜级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">0-400成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-silver flex items-center justify-center text-gray-700 text-xs font-bold">银</div>
+                                        <span class="text-xs font-medium">银级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">401-1500成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-xs font-bold">金</div>
+                                        <span class="text-xs font-medium">金级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">1501+成长值</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 mb-1">已绑定任务：</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">分享笔记</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">转发活动</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 徽章5：裂变专家 -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white shadow-lg">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">高裂变</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-bold text-sm">裂变专家</h3>
+                                <button class="text-indigo-600 text-xs hover:underline">编辑</button>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">绑定任务：邀请好友、成交转化</p>
+                            
+                            <div class="space-y-2 mb-3">
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs font-bold">铜</div>
+                                        <span class="text-xs font-medium">铜级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">0-600成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-silver flex items-center justify-center text-gray-700 text-xs font-bold">银</div>
+                                        <span class="text-xs font-medium">银级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">601-2500成长值</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-xs font-bold">金</div>
+                                        <span class="text-xs font-medium">金级</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">2501+成长值</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 mb-1">已绑定任务：</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">邀请好友</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">成交转化</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3.2 编辑徽章弹窗 -->
+        <div class="pc-window" style="max-width: 500px; margin: 2rem auto 0;">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-gray-900">编辑徽章</h2>
+                    <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">徽章名称</label>
+                        <input type="text" value="活跃分子" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">徽章图标</label>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <button class="px-3 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-700 hover:bg-gray-50">更换图标</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">任务类型标签</label>
+                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <option>高活跃</option>
+                            <option>高交互</option>
+                            <option>高链接</option>
+                            <option>高分享</option>
+                            <option>高裂变</option>
+                        </select>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">等级成长值阈值配置</label>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                                <div class="w-8 h-8 rounded-full badge-copper flex items-center justify-center text-white text-sm font-bold">铜</div>
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-600">铜级上限</label>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs">0 -</span>
+                                        <input type="number" value="500" class="w-20 border rounded px-2 py-1 text-sm">
+                                        <span class="text-xs">成长值</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="w-8 h-8 rounded-full badge-silver flex items-center justify-center text-gray-700 text-sm font-bold">银</div>
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-600">银级范围</label>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs">501 -</span>
+                                        <input type="number" value="2000" class="w-20 border rounded px-2 py-1 text-sm">
+                                        <span class="text-xs">成长值</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                <div class="w-8 h-8 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-sm font-bold">金</div>
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-600">金级下限</label>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs">2001+ 成长值</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">绑定任务</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" checked class="rounded text-indigo-600">
+                                <span class="text-sm">每日签到</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" checked class="rounded text-indigo-600">
+                                <span class="text-sm">连续访问7天</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded text-indigo-600">
+                                <span class="text-sm">连续访问30天</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">取消</button>
+                        <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">保存修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- 顶部标题 -->
+<div class="max-w-7xl mx-auto px-4 py-8 space-y-16">
+
+    <!-- 数据统计全模块平铺 -->
+    <section>
+        <h2 class="text-3xl font-bold mb-8 section-title">四、数据看板</h2>
+        
+        <div class="pc-window">
+            <!-- 顶部导航 -->
+            <div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-xl font-bold text-gray-900">数据看板</h1>
+                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs">实时数据</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <select class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                        <option>最近7天</option>
+                        <option>最近30天</option>
+                        <option>本季度</option>
+                        <option>本年度</option>
+                    </select>
+                    <button class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-download mr-1"></i>导出报告
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-8">
+
+                <!-- 1. 会员等级分布（客群数据） -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900">1. 会员等级分布</h3>
+                            <p class="text-xs text-gray-500 mt-1">各等级会员数量分布及客户明细</p>
+                        </div>
+                        <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs hover:bg-indigo-700">
+                            <i class="fas fa-users mr-1"></i>查看客户明细
+                        </button>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- 左侧：分布图表 -->
+                            <div class="col-span-5">
+                                <div class="chart-placeholder rounded-xl h-64 flex items-center justify-center mb-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-pie text-5xl text-indigo-300 mb-3"></i>
+                                        <p class="text-sm text-gray-600 font-medium">会员等级分布饼图</p>
+                                        <p class="text-xs text-gray-400 mt-2">V1: 45% | V2: 25% | V3: 15% | V4: 8% | V5: 4% | V6: 2% | V7: 1%</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="bg-gray-50 rounded-lg p-3 text-center">
+                                        <p class="text-2xl font-bold text-indigo-600">12,458</p>
+                                        <p class="text-xs text-gray-500">总会员数</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-3 text-center">
+                                        <p class="text-2xl font-bold text-green-600">1,868</p>
+                                        <p class="text-xs text-gray-500">高阶会员(V4+)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：等级明细表格 -->
+                            <div class="col-span-7">
+                                <div class="overflow-hidden rounded-lg border border-gray-200">
+                                    <table class="w-full data-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-4 py-3 text-left">等级</th>
+                                                <th class="px-4 py-3 text-left">等级名称</th>
+                                                <th class="px-4 py-3 text-right">会员数量</th>
+                                                <th class="px-4 py-3 text-right">占比</th>
+                                                <th class="px-4 py-3 text-right">较上期</th>
+                                                <th class="px-4 py-3 text-center">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="px-4 py-3"><span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-bold">V1</span></td>
+                                                <td class="px-4 py-3 font-medium">普通会员</td>
+                                                <td class="px-4 py-3 text-right font-bold">5,606</td>
+                                                <td class="px-4 py-3 text-right">45.0%</td>
+                                                <td class="px-4 py-3 text-right text-green-600"><i class="fas fa-arrow-up mr-1"></i>5.2%</td>
+                                                <td class="px-4 py-3 text-center"><button class="text-indigo-600 text-xs hover:underline">查看明细</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3"><span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">V2</span></td>
+                                                <td class="px-4 py-3 font-medium">青铜会员</td>
+                                                <td class="px-4 py-3 text-right font-bold">3,115</td>
+                                                <td class="px-4 py-3 text-right">25.0%</td>
+                                                <td class="px-4 py-3 text-right text-green-600"><i class="fas fa-arrow-up mr-1"></i>3.8%</td>
+                                                <td class="px-4 py-3 text-center"><button class="text-indigo-600 text-xs hover:underline">查看明细</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3"><span class="px-2 py-1 bg-teal-100 text-teal-700 rounded text-xs font-bold">V3</span></td>
+                                                <td class="px-4 py-3 font-medium">白银会员</td>
+                                                <td class="px-4 py-3 text-right font-bold">1,869</td>
+                                                <td class="px-4 py-3 text-right">15.0%</td>
+                                                <td class="px-4 py-3 text-right text-green-600"><i class="fas fa-arrow-up mr-1"></i>2.1%</td>
+                                                <td class="px-4 py-3 text-center"><button class="text-indigo-600 text-xs hover:underline">查看明细</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3"><span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-bold">V4</span></td>
+                                                <td class="px-4 py-3 font-medium">黄金会员</td>
+                                                <td class="px-4 py-3 text-right font-bold">996</td>
+                                                <td class="px-4 py-3 text-right">8.0%</td>
+                                                <td class="px-4 py-3 text-right text-red-600"><i class="fas fa-arrow-down mr-1"></i>0.5%</td>
+                                                <td class="px-4 py-3 text-center"><button class="text-indigo-600 text-xs hover:underline">查看明细</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3"><span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-bold">V5</span></td>
+                                                <td class="px-4 py-3 font-medium">铂金会员</td>
+                                                <td class="px-4 py-3 text-right font-bold">498</td>
+                                                <td class="px-4 py-3 text-right">4.0%</td>
+                                                <td class="px-4 py-3 text-right text-green-600"><i class="fas fa-arrow-up mr-1"></i>1.2%</td>
+                                                <td class="px-4 py-3 text-center"><button class="text-indigo-600 text-xs hover:underline">查看明细</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3"><span class="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs font-bold">V6</span></td>
+                                                <td class="px-4 py-3 font-medium">钻石会员</td>
+                                                <td class="px-4 py-3 text-right font-bold">249</td>
+                                                <td class="px-4 py-3 text-right">2.0%</td>
+                                                <td class="px-4 py-3 text-right text-gray-500"><i class="fas fa-minus mr-1"></i>0.0%</td>
+                                                <td class="px-4 py-3 text-center"><button class="text-indigo-600 text-xs hover:underline">查看明细</button></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold">V7</span></td>
+                                                <td class="px-4 py-3 font-medium">黑钻会员</td>
+                                                <td class="px-4 py-3 text-right font-bold">125</td>
+                                                <td class="px-4 py-3 text-right">1.0%</td>
+                                                <td class="px-4 py-3 text-right text-green-600"><i class="fas fa-arrow-up mr-1"></i>0.3%</td>
+                                                <td class="px-4 py-3 text-center"><button class="text-indigo-600 text-xs hover:underline">查看明细</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 成长值数据（下发、兑换及明细） -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="font-bold text-gray-900">2. 成长值数据</h3>
+                        <p class="text-xs text-gray-500 mt-1">成长值下发、兑换数据及获取/兑换明细</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <!-- 顶部统计卡片区 -->
+                        <div class="grid grid-cols-4 gap-4 mb-6">
+                            <div class="stat-card bg-blue-50 rounded-xl p-4 border border-blue-100">
+                                <div class="flex items-center justify-between mb-2">
+                                    <i class="fas fa-plus-circle text-blue-600 text-xl"></i>
+                                    <span class="text-xs text-blue-600 font-medium">今日 +1,234</span>
+                                </div>
+                                <p class="text-2xl font-bold text-gray-900">856,234</p>
+                                <p class="text-xs text-gray-500">累计发放成长值</p>
+                            </div>
+                            <div class="stat-card bg-red-50 rounded-xl p-4 border border-red-100">
+                                <div class="flex items-center justify-between mb-2">
+                                    <i class="fas fa-minus-circle text-red-600 text-xl"></i>
+                                    <span class="text-xs text-red-600 font-medium">今日 -567</span>
+                                </div>
+                                <p class="text-2xl font-bold text-gray-900">234,567</p>
+                                <p class="text-xs text-gray-500">累计兑换成长值</p>
+                            </div>
+                            <div class="stat-card bg-green-50 rounded-xl p-4 border border-green-100">
+                                <div class="flex items-center justify-between mb-2">
+                                    <i class="fas fa-wallet text-green-600 text-xl"></i>
+                                    <span class="text-xs text-green-600 font-medium">剩余可用</span>
+                                </div>
+                                <p class="text-2xl font-bold text-gray-900">621,667</p>
+                                <p class="text-xs text-gray-500">会员持有成长值</p>
+                            </div>
+                            <div class="stat-card bg-purple-50 rounded-xl p-4 border border-purple-100">
+                                <div class="flex items-center justify-between mb-2">
+                                    <i class="fas fa-exchange-alt text-purple-600 text-xl"></i>
+                                    <span class="text-xs text-purple-600 font-medium">兑换率</span>
+                                </div>
+                                <p class="text-2xl font-bold text-gray-900">27.4%</p>
+                                <p class="text-xs text-gray-500">成长值兑换率</p>
+                            </div>
+                        </div>
+
+                        <!-- 图表 + 明细区 -->
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- 左侧：趋势图 -->
+                            <div class="col-span-5">
+                                <div class="chart-placeholder rounded-xl h-56 flex items-center justify-center mb-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-line text-4xl text-indigo-300 mb-2"></i>
+                                        <p class="text-sm text-gray-600 font-medium">成长值下发 vs 兑换趋势图</p>
+                                        <p class="text-xs text-gray-400 mt-1">近30天数据走势</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-600">日均发放</span>
+                                        <span class="font-bold">2,456 成长值</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-600">日均兑换</span>
+                                        <span class="font-bold">892 成长值</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-600">活跃兑换人数</span>
+                                        <span class="font-bold">3,421 人</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：明细表格 -->
+                            <div class="col-span-7">
+                                <div class="flex border-b border-gray-200 mb-3">
+                                    <button class="px-4 py-2 text-sm tab-active">获取明细</button>
+                                    <button class="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">兑换明细</button>
+                                </div>
+                                <div class="overflow-hidden rounded-lg border border-gray-200">
+                                    <table class="w-full data-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-3 py-2 text-left">时间</th>
+                                                <th class="px-3 py-2 text-left">用户</th>
+                                                <th class="px-3 py-2 text-left">获取渠道</th>
+                                                <th class="px-3 py-2 text-right">成长值</th>
+                                                <th class="px-3 py-2 text-center">状态</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">2025-03-04 14:30</td>
+                                                <td class="px-3 py-2 text-xs">张小明</td>
+                                                <td class="px-3 py-2"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">写笔记</span></td>
+                                                <td class="px-3 py-2 text-right text-green-600 font-bold">+20</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">已到账</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">2025-03-04 14:25</td>
+                                                <td class="px-3 py-2 text-xs">李小红</td>
+                                                <td class="px-3 py-2"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">分享笔记</span></td>
+                                                <td class="px-3 py-2 text-right text-green-600 font-bold">+10</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">已到账</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">2025-03-04 14:20</td>
+                                                <td class="px-3 py-2 text-xs">王大伟</td>
+                                                <td class="px-3 py-2"><span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">每日签到</span></td>
+                                                <td class="px-3 py-2 text-right text-green-600 font-bold">+5</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">已到账</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">2025-03-04 14:15</td>
+                                                <td class="px-3 py-2 text-xs">赵小芳</td>
+                                                <td class="px-3 py-2"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">笔记收藏</span></td>
+                                                <td class="px-3 py-2 text-right text-green-600 font-bold">+5</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">已到账</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">2025-03-04 14:10</td>
+                                                <td class="px-3 py-2 text-xs">刘小强</td>
+                                                <td class="px-3 py-2"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">邀请好友</span></td>
+                                                <td class="px-3 py-2 text-right text-green-600 font-bold">+50</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">审核中</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="flex justify-between items-center mt-3">
+                                    <span class="text-xs text-gray-500">显示最近5条记录</span>
+                                    <button class="text-xs text-indigo-600 hover:underline">查看全部明细</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 徽章获取数据（客层分布） -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900">3. 徽章获取数据</h3>
+                            <p class="text-xs text-gray-500 mt-1">各徽章获取分布及顾客徽章明细</p>
+                        </div>
+                        <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs hover:bg-indigo-700">
+                            <i class="fas fa-medal mr-1"></i>查看徽章明细
+                        </button>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- 左侧：徽章分布 -->
+                            <div class="col-span-4">
+                                <div class="chart-placeholder rounded-xl h-48 flex items-center justify-center mb-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-pie text-4xl text-yellow-300 mb-2"></i>
+                                        <p class="text-sm text-gray-600 font-medium">徽章获取分布</p>
+                                        <p class="text-xs text-gray-400 mt-1">5类徽章占比分析</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-2 bg-orange-50 rounded-lg border border-orange-100">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-fire"></i>
+                                            </div>
+                                            <span class="text-xs font-medium">活跃分子</span>
+                                        </div>
+                                        <span class="text-xs font-bold">1,234人</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg border border-blue-100">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-comments"></i>
+                                            </div>
+                                            <span class="text-xs font-medium">社交达人</span>
+                                        </div>
+                                        <span class="text-xs font-bold">2,567人</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-purple-50 rounded-lg border border-purple-100">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-link"></i>
+                                            </div>
+                                            <span class="text-xs font-medium">利益链接者</span>
+                                        </div>
+                                        <span class="text-xs font-bold">892人</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 中间：等级分布详情 -->
+                            <div class="col-span-4">
+                                <h4 class="font-semibold text-sm mb-3 text-gray-700">各徽章等级分布</h4>
+                                <div class="space-y-3">
+                                    <div class="border border-gray-200 rounded-lg p-3">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-orange-600">活跃分子</span>
+                                            <span class="text-xs text-gray-500">总计 1,234人</span>
+                                        </div>
+                                        <div class="space-y-1.5">
+                                            <div class="flex items-center text-xs">
+                                                <div class="w-6 h-6 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-xs font-bold mr-2">金</div>
+                                                <div class="flex-1">
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>金级</span>
+                                                        <span>123人 (10%)</span>
+                                                    </div>
+                                                    <div class="progress-bar">
+                                                        <div class="progress-fill bg-yellow-400" style="width: 10%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center text-xs">
+                                                <div class="w-6 h-6 rounded-full badge-silver flex items-center justify-center text-gray-700 text-xs font-bold mr-2">银</div>
+                                                <div class="flex-1">
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>银级</span>
+                                                        <span>456人 (37%)</span>
+                                                    </div>
+                                                    <div class="progress-bar">
+                                                        <div class="progress-fill bg-gray-300" style="width: 37%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center text-xs">
+                                                <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs font-bold mr-2">铜</div>
+                                                <div class="flex-1">
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>铜级</span>
+                                                        <span>655人 (53%)</span>
+                                                    </div>
+                                                    <div class="progress-bar">
+                                                        <div class="progress-fill bg-orange-400" style="width: 53%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border border-gray-200 rounded-lg p-3">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-blue-600">社交达人</span>
+                                            <span class="text-xs text-gray-500">总计 2,567人</span>
+                                        </div>
+                                        <div class="space-y-1.5">
+                                            <div class="flex items-center text-xs">
+                                                <div class="w-6 h-6 rounded-full badge-gold flex items-center justify-center text-yellow-800 text-xs font-bold mr-2">金</div>
+                                                <div class="flex-1">
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>金级</span>
+                                                        <span>257人 (10%)</span>
+                                                    </div>
+                                                    <div class="progress-bar">
+                                                        <div class="progress-fill bg-yellow-400" style="width: 10%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center text-xs">
+                                                <div class="w-6 h-6 rounded-full badge-silver flex items-center justify-center text-gray-700 text-xs font-bold mr-2">银</div>
+                                                <div class="flex-1">
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>银级</span>
+                                                        <span>770人 (30%)</span>
+                                                    </div>
+                                                    <div class="progress-bar">
+                                                        <div class="progress-fill bg-gray-300" style="width: 30%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center text-xs">
+                                                <div class="w-6 h-6 rounded-full badge-copper flex items-center justify-center text-white text-xs font-bold mr-2">铜</div>
+                                                <div class="flex-1">
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>铜级</span>
+                                                        <span>1,540人 (60%)</span>
+                                                    </div>
+                                                    <div class="progress-bar">
+                                                        <div class="progress-fill bg-orange-400" style="width: 60%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：顾客徽章明细 -->
+                            <div class="col-span-4">
+                                <h4 class="font-semibold text-sm mb-3 text-gray-700">顾客徽章获取明细</h4>
+                                <div class="overflow-hidden rounded-lg border border-gray-200">
+                                    <table class="w-full data-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-3 py-2 text-left">顾客</th>
+                                                <th class="px-3 py-2 text-center">徽章</th>
+                                                <th class="px-3 py-2 text-center">等级</th>
+                                                <th class="px-3 py-2 text-right">成长值</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">张小明</td>
+                                                <td class="px-3 py-2 text-center"><i class="fas fa-fire text-orange-500"></i></td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded text-xs">银</span></td>
+                                                <td class="px-3 py-2 text-right text-xs">1,250</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">李小红</td>
+                                                <td class="px-3 py-2 text-center"><i class="fas fa-comments text-blue-500"></i></td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">金</span></td>
+                                                <td class="px-3 py-2 text-right text-xs">3,400</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">王大伟</td>
+                                                <td class="px-3 py-2 text-center"><i class="fas fa-fire text-orange-500"></i></td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">铜</span></td>
+                                                <td class="px-3 py-2 text-right text-xs">320</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">赵小芳</td>
+                                                <td class="px-3 py-2 text-center"><i class="fas fa-link text-purple-500"></i></td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded text-xs">银</span></td>
+                                                <td class="px-3 py-2 text-right text-xs">890</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">刘小强</td>
+                                                <td class="px-3 py-2 text-center"><i class="fas fa-share-nodes text-green-500"></i></td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">铜</span></td>
+                                                <td class="px-3 py-2 text-right text-xs">450</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button class="w-full mt-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50">
+                                    查看全部徽章明细
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. 任务数据（完成情况） -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="font-bold text-gray-900">4. 任务数据</h3>
+                        <p class="text-xs text-gray-500 mt-1">不同徽章任务完成情况、所有任务完成率及完成情况</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- 左侧：任务完成率总览 -->
+                            <div class="col-span-4">
+                                <div class="chart-placeholder rounded-xl h-48 flex items-center justify-center mb-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-bar text-4xl text-green-300 mb-2"></i>
+                                        <p class="text-sm text-gray-600 font-medium">任务完成率统计</p>
+                                        <p class="text-xs text-gray-400 mt-1">整体完成率 67.3%</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                                        <div>
+                                            <p class="text-xs text-gray-600">总任务数</p>
+                                            <p class="text-lg font-bold text-gray-900">15个</p>
+                                        </div>
+                                        <i class="fas fa-tasks text-green-500 text-xl"></i>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                        <div>
+                                            <p class="text-xs text-gray-600">今日完成</p>
+                                            <p class="text-lg font-bold text-gray-900">1,234次</p>
+                                        </div>
+                                        <i class="fas fa-check-circle text-blue-500 text-xl"></i>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100">
+                                        <div>
+                                            <p class="text-xs text-gray-600">进行中</p>
+                                            <p class="text-lg font-bold text-gray-900">567次</p>
+                                        </div>
+                                        <i class="fas fa-spinner text-orange-500 text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 中间：按徽章分类任务 -->
+                            <div class="col-span-4">
+                                <h4 class="font-semibold text-sm mb-3 text-gray-700">按徽章分类任务完成率</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs">
+                                                    <i class="fas fa-fire"></i>
+                                                </div>
+                                                <span class="text-xs font-medium">高活跃任务</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-orange-600">78.5%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill bg-orange-400" style="width: 78.5%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">完成 3,421 / 提交 4,356</p>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs">
+                                                    <i class="fas fa-comments"></i>
+                                                </div>
+                                                <span class="text-xs font-medium">高交互任务</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-blue-600">65.2%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill bg-blue-400" style="width: 65.2%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">完成 2,134 / 提交 3,273</p>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs">
+                                                    <i class="fas fa-link"></i>
+                                                </div>
+                                                <span class="text-xs font-medium">高链接任务</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-purple-600">45.8%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill bg-purple-400" style="width: 45.8%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">完成 892 / 提交 1,948</p>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs">
+                                                    <i class="fas fa-share-nodes"></i>
+                                                </div>
+                                                <span class="text-xs font-medium">高分享任务</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-green-600">52.3%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill bg-green-400" style="width: 52.3%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">完成 1,567 / 提交 2,996</p>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xs">
+                                                    <i class="fas fa-users"></i>
+                                                </div>
+                                                <span class="text-xs font-medium">高裂变任务</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-red-600">28.6%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill bg-red-400" style="width: 28.6%"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">完成 456 / 提交 1,594</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：具体任务完成情况 -->
+                            <div class="col-span-4">
+                                <h4 class="font-semibold text-sm mb-3 text-gray-700">具体任务完成情况 Top 8</h4>
+                                <div class="overflow-hidden rounded-lg border border-gray-200">
+                                    <table class="w-full data-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-3 py-2 text-left">任务名称</th>
+                                                <th class="px-3 py-2 text-center">类型</th>
+                                                <th class="px-3 py-2 text-right">完成率</th>
+                                                <th class="px-3 py-2 text-right">人次</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">每日签到</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">活跃</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-green-500" style="width: 92%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">92%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">8,234</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">笔记收藏</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">交互</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-green-500" style="width: 78%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">78%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">5,678</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">分享笔记</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs">分享</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-yellow-500" style="width: 65%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">65%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">3,456</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">写笔记</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">交互</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-yellow-500" style="width: 45%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">45%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">2,345</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">邀请好友</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-xs">裂变</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-red-500" style="width: 23%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">23%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">1,234</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">连续签到7天</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">活跃</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-yellow-500" style="width: 34%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">34%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">2,567</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">权益领取</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">链接</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-yellow-500" style="width: 56%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">56%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">4,321</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">成交转化</td>
+                                                <td class="px-3 py-2 text-center"><span class="px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-xs">裂变</span></td>
+                                                <td class="px-3 py-2 text-right">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <div class="w-16 progress-bar">
+                                                            <div class="progress-fill bg-red-500" style="width: 12%"></div>
+                                                        </div>
+                                                        <span class="text-xs font-bold">12%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-right text-xs">567</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. 商品兑换数据 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900">5. 商品兑换数据</h3>
+                            <p class="text-xs text-gray-500 mt-1">成长值兑换商品/优惠券/抽奖次数的兑换数据</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-filter mr-1"></i>筛选
+                            </button>
+                            <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs hover:bg-indigo-700">
+                                <i class="fas fa-list mr-1"></i>兑换明细
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- 左侧：兑换统计 -->
+                            <div class="col-span-3">
+                                <div class="chart-placeholder rounded-xl h-40 flex items-center justify-center mb-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-shopping-cart text-4xl text-pink-300 mb-2"></i>
+                                        <p class="text-sm text-gray-600 font-medium">兑换类型分布</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-pink-50 rounded-lg border border-pink-100">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fas fa-ticket-alt text-pink-500"></i>
+                                            <span class="text-xs font-medium">优惠券兑换</span>
+                                        </div>
+                                        <span class="text-xs font-bold">45.2%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fas fa-box text-purple-500"></i>
+                                            <span class="text-xs font-medium">实物商品</span>
+                                        </div>
+                                        <span class="text-xs font-bold">32.8%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fas fa-dice text-blue-500"></i>
+                                            <span class="text-xs font-medium">抽奖次数</span>
+                                        </div>
+                                        <span class="text-xs font-bold">22.0%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 中间：热门兑换商品 -->
+                            <div class="col-span-5">
+                                <h4 class="font-semibold text-sm mb-3 text-gray-700">热门兑换商品 Top 5</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-400 to-red-400 flex items-center justify-center text-white">
+                                                <i class="fas fa-ticket-alt text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium">50元优惠券</p>
+                                                <p class="text-xs text-gray-500">满200可用 · 券类</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm font-bold text-indigo-600">500成长值</p>
+                                            <p class="text-xs text-gray-500">已兑 2,345次</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-white">
+                                                <i class="fas fa-box text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium">定制保温杯</p>
+                                                <p class="text-xs text-gray-500">价值150元 · 实物</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm font-bold text-indigo-600">2000成长值</p>
+                                            <p class="text-xs text-gray-500">已兑 892次</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white">
+                                                <i class="fas fa-dice text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium">抽奖机会 x3</p>
+                                                <p class="text-xs text-gray-500">年终大奖池 · 抽奖</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm font-bold text-indigo-600">150成长值</p>
+                                            <p class="text-xs text-gray-500">已兑 1,567次</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-400 flex items-center justify-center text-white">
+                                                <i class="fas fa-ticket-alt text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium">20元优惠券</p>
+                                                <p class="text-xs text-gray-500">满100可用 · 券类</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm font-bold text-indigo-600">200成长值</p>
+                                            <p class="text-xs text-gray-500">已兑 3,456次</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-teal-400 flex items-center justify-center text-white">
+                                                <i class="fas fa-box text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium">定制马克杯</p>
+                                                <p class="text-xs text-gray-500">价值50元 · 实物</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm font-bold text-indigo-600">800成长值</p>
+                                            <p class="text-xs text-gray-500">已兑 1,234次</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：兑换明细 -->
+                            <div class="col-span-4">
+                                <h4 class="font-semibold text-sm mb-3 text-gray-700">最近兑换明细</h4>
+                                <div class="overflow-hidden rounded-lg border border-gray-200">
+                                    <table class="w-full data-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-3 py-2 text-left">时间</th>
+                                                <th class="px-3 py-2 text-left">顾客</th>
+                                                <th class="px-3 py-2 text-left">兑换内容</th>
+                                                <th class="px-3 py-2 text-right">消耗</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">14:30:25</td>
+                                                <td class="px-3 py-2 text-xs">张小明</td>
+                                                <td class="px-3 py-2 text-xs"><span class="px-1.5 py-0.5 bg-pink-100 text-pink-700 rounded">50元券</span></td>
+                                                <td class="px-3 py-2 text-right text-red-500 font-bold">-500</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">14:28:18</td>
+                                                <td class="px-3 py-2 text-xs">李小红</td>
+                                                <td class="px-3 py-2 text-xs"><span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">抽奖x3</span></td>
+                                                <td class="px-3 py-2 text-right text-red-500 font-bold">-150</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">14:25:42</td>
+                                                <td class="px-3 py-2 text-xs">王大伟</td>
+                                                <td class="px-3 py-2 text-xs"><span class="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">保温杯</span></td>
+                                                <td class="px-3 py-2 text-right text-red-500 font-bold">-2000</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">14:22:15</td>
+                                                <td class="px-3 py-2 text-xs">赵小芳</td>
+                                                <td class="px-3 py-2 text-xs"><span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded">20元券</span></td>
+                                                <td class="px-3 py-2 text-right text-red-500 font-bold">-200</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">14:18:33</td>
+                                                <td class="px-3 py-2 text-xs">刘小强</td>
+                                                <td class="px-3 py-2 text-xs"><span class="px-1.5 py-0.5 bg-green-100 text-green-700 rounded">马克杯</span></td>
+                                                <td class="px-3 py-2 text-right text-red-500 font-bold">-800</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">14:15:58</td>
+                                                <td class="px-3 py-2 text-xs">陈小美</td>
+                                                <td class="px-3 py-2 text-xs"><span class="px-1.5 py-0.5 bg-pink-100 text-pink-700 rounded">50元券</span></td>
+                                                <td class="px-3 py-2 text-right text-red-500 font-bold">-500</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-2 text-xs">14:12:41</td>
+                                                <td class="px-3 py-2 text-xs">周小杰</td>
+                                                <td class="px-3 py-2 text-xs"><span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">抽奖x3</span></td>
+                                                <td class="px-3 py-2 text-right text-red-500 font-bold">-150</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div class="flex items-center justify-between text-xs mb-2">
+                                        <span class="text-gray-600">今日总兑换次数</span>
+                                        <span class="font-bold text-gray-900">1,234次</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-xs mb-2">
+                                        <span class="text-gray-600">今日总消耗成长值</span>
+                                        <span class="font-bold text-red-600">567,890</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span class="text-gray-600">平均单次消耗</span>
+                                        <span class="font-bold text-gray-900">460成长值</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 底部：兑换趋势 -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="font-semibold text-sm mb-3 text-gray-700">兑换趋势（近30天）</h4>
+                            <div class="chart-placeholder rounded-xl h-48 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-area text-4xl text-indigo-300 mb-2"></i>
+                                    <p class="text-sm text-gray-600 font-medium">每日兑换次数趋势图</p>
+                                    <p class="text-xs text-gray-400 mt-1">包含优惠券、实物商品、抽奖次数三类兑换数据走势</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>

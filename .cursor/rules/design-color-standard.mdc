@@ -1,0 +1,41 @@
+---
+description: Unified color standard for all future design outputs.
+alwaysApply: true
+---
+
+# Design Color Standard
+
+Use a single color system for all future screen outputs. Do not introduce random new hues.
+
+## Core Palette (Allowed)
+- Primary: `#2563EB`
+- Primary Text/Dark: `#1E3A8A`, `#1F2937`, `#111827`
+- Secondary Text: `#334155`, `#64748B`, `#94A3B8`, `#9CA3AF`
+- Background: `#F5F7FB`, `#FFFFFF`, `#F8FAFC`, `#EEF2F7`
+- Border/Divider: `#E2E8F0`, `#CBD5E1`, `#D1D5DB`, `#E5E7EB`
+- Warning/Attention: `#F59E0B`, `#FB923C`, `#B45309`, `#C2410C`
+- Soft Warning BG: `#FEF3C7`, `#FFEDD5`
+- Accent (small badge only): `#D5B8FD`
+
+## Usage Rules
+- Keep page-level colors in neutral + primary only.
+- Warning colors are only for risk tags, warning chips, and key attention hints.
+- Accent purple is only for small badges; never use as large surface background.
+- Card/background/border must come from the allowed neutral set.
+- If unsure, prefer existing page colors rather than adding a new one.
+
+## Interactive State Rules (Mandatory)
+- For tab/nav/filter state switching, exactly one item can be active at a time.
+- When switching active item, remove ALL active residues from previous item:
+  - active fill/background
+  - active text/icon color
+  - active border/stroke
+  - active shadow/effect
+- Inactive items must use a single unified inactive style (same fill, text/icon color, border behavior).
+- Never leave mixed states like: inactive text with active border, or inactive fill with active shadow.
+
+## State-Switch QA Checklist (Run every time)
+- [ ] Active item is visually unique and complete (fill + text/icon).
+- [ ] All non-active siblings are style-consistent with each other.
+- [ ] No residual border/shadow/highlight remains on previous active item.
+- [ ] Screenshot check completed for the whole nav/filter group, not only the edited node.

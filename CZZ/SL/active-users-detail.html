@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>活跃用户数据详情</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f6fa; min-height: 100vh; padding-bottom: 24px; max-width: 430px; margin: 0 auto; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); position: sticky; top: 0; z-index: 100; }
+    .header-btn { width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,0.2); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #fff; }
+    .header-title { font-size: 17px; font-weight: 600; color: #fff; }
+    .header-right { display: flex; gap: 8px; }
+    .time-filter { display: flex; justify-content: space-around; background: #fff; padding: 12px 16px; border-bottom: 1px solid #e8e8e8; }
+    .time-btn { padding: 6px 16px; font-size: 13px; color: #666; background: transparent; border: none; border-radius: 16px; cursor: pointer; }
+    .time-btn.active { color: #667eea; background: #f0f2ff; font-weight: 500; }
+    .main { padding: 12px; }
+    .module-card { background: #fff; border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+    .module-header { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; }
+    .module-title-row { display: flex; align-items: center; gap: 8px; }
+    .module-title-icon { width: 4px; height: 16px; background: #667eea; border-radius: 2px; }
+    .module-title { font-size: 15px; font-weight: 600; color: #333; }
+    .module-body { padding: 16px; }
+    .overview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .overview-item { width: 100%; background: #f8f9ff; border-radius: 10px; padding: 16px; border-left: 3px solid #667eea; }
+    .overview-item .label { font-size: 12px; color: #666; }
+    .overview-item .val { font-size: 20px; font-weight: 700; color: #333; margin-top: 4px; }
+    .overview-trend { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+    .overview-trend.up { background: #f6ffed; color: #52c41a; }
+    .overview-trend.down { background: #fff1f0; color: #ff4d4f; }
+    .trend-chart { display: flex; height: 200px; }
+    .chart-y-axis { width: 30px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0 30px; font-size: 10px; color: #999; }
+    .chart-bars { flex: 1; display: flex; justify-content: space-around; align-items: flex-end; padding: 20px 0 30px; margin-left: 8px; }
+    .chart-bar-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .chart-value { font-size: 10px; color: #667eea; font-weight: 500; margin-bottom: 4px; }
+    .chart-bar { width: 24px; border-radius: 4px; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); min-height: 8px; }
+    .chart-label { font-size: 10px; color: #666; margin-top: 8px; }
+    .chart-desc { margin-top: 12px; text-align: center; font-size: 11px; color: #999; }
+    .funnel-list { display: flex; flex-direction: column; gap: 16px; }
+    .funnel-item { display: flex; align-items: center; gap: 12px; }
+    .funnel-stage { width: 100px; }
+    .funnel-name { font-size: 13px; font-weight: 600; color: #333; }
+    .funnel-desc { font-size: 11px; color: #999; }
+    .funnel-bar-wrap { flex: 1; height: 32px; background: #f0f0f0; border-radius: 16px; overflow: hidden; }
+    .funnel-bar { height: 100%; border-radius: 16px; background: linear-gradient(90deg, #667eea, #764ba2); }
+    .funnel-value { min-width: 70px; text-align: right; font-size: 13px; font-weight: 600; color: #333; }
+    .level-list { display: flex; flex-direction: column; gap: 16px; }
+    .level-item { display: flex; align-items: center; gap: 12px; }
+    .level-info { width: 100px; }
+    .level-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .level-rule { font-size: 11px; color: #999; }
+    .level-bar-wrap { flex: 1; height: 28px; background: #f0f0f0; border-radius: 14px; overflow: hidden; }
+    .level-bar { height: 100%; border-radius: 14px; }
+    .level-stats { width: 80px; text-align: right; }
+    .level-count { font-size: 13px; font-weight: 600; color: #333; }
+    .level-pct { font-size: 11px; color: #999; }
+    .behavior-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .behavior-item { background: #f8f9fa; border-radius: 10px; padding: 16px 8px; text-align: center; }
+    .behavior-icon { width: 44px; height: 44px; margin: 0 auto 10px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+    .behavior-name { font-size: 11px; color: #666; }
+    .behavior-val { font-size: 15px; font-weight: 600; color: #333; margin-top: 4px; }
+    .behavior-rate { display: inline-flex; align-items: center; gap: 2px; margin-top: 4px; font-size: 11px; color: #52c41a; }
+    .churn-desc { text-align: center; margin-bottom: 16px; font-size: 11px; color: #999; }
+    .churn-list { display: flex; flex-direction: column; gap: 12px; }
+    .churn-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 10px; }
+    .churn-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .churn-info { flex: 1; }
+    .churn-name { font-size: 13px; font-weight: 600; color: #333; }
+    .churn-desc-text { font-size: 11px; color: #999; }
+    .churn-stats { text-align: right; }
+    .churn-count { font-size: 13px; font-weight: 600; color: #333; }
+    .churn-rate { font-size: 13px; font-weight: 600; }
+    .channel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .channel-card { background: #f8f9ff; border-radius: 10px; padding: 16px; border: 1px solid #e8e8ff; }
+    .channel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .channel-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .channel-name { font-size: 13px; font-weight: 600; color: #333; }
+    .channel-users { font-size: 20px; font-weight: 700; color: #667eea; margin-bottom: 4px; }
+    .channel-desc { font-size: 11px; color: #999; }
+    .channel-trend { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11px; }
+    .channel-trend.up { color: #52c41a; }
+    .channel-trend.down { color: #ff4d4f; }
+    .segment-list { display: flex; flex-direction: column; gap: 12px; }
+    .segment-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 10px; }
+    .segment-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+    .segment-info { flex: 1; }
+    .segment-name { font-size: 13px; font-weight: 600; color: #333; }
+    .segment-desc { font-size: 11px; color: #999; }
+    .segment-stats { text-align: right; }
+    .segment-count { font-size: 15px; font-weight: 700; color: #333; }
+    .segment-rate { font-size: 11px; color: #999; }
+    .recall-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .recall-card { border: 1px solid #e8e8e8; border-radius: 10px; padding: 16px; background: #fff; }
+    .recall-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(90deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 12px; font-size: 18px; }
+    .recall-name { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+    .recall-desc { font-size: 11px; color: #666; line-height: 1.4; margin-bottom: 10px; }
+    .recall-stats { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+    .recall-rate { color: #52c41a; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="customer-growth-analysis.html" class="header-btn" aria-label="返回">←</a>
+    <h1 class="header-title">活跃用户数据详情</h1>
+    <div class="header-right">
+      <button type="button" class="header-btn" aria-label="日历">📅</button>
+      <button type="button" class="header-btn" aria-label="更多">⋯</button>
+    </div>
+  </header>
+  <div class="time-filter">
+    <button type="button" class="time-btn">今日</button>
+    <button type="button" class="time-btn active">近 7 天</button>
+    <button type="button" class="time-btn">近 30 天</button>
+    <button type="button" class="time-btn">本月</button>
+  </div>
+  <main class="main">
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">活跃数据概览</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="overview-grid">
+          <div class="overview-item"><span class="label">活跃客户数</span><div class="val">1,286</div><div class="overview-trend up">↑ 12.5% 环比</div></div>
+          <div class="overview-item"><span class="label">活跃率</span><div class="val">68.4%</div><div class="overview-trend up">↑ 5.2% 环比</div></div>
+          <div class="overview-item"><span class="label">人均活跃天数</span><div class="val">4.2</div><div class="overview-trend up">↑ 8.1% 环比</div></div>
+          <div class="overview-item"><span class="label">新增活跃</span><div class="val">156</div><div class="overview-trend down">↓ 3.4% 环比</div></div>
+        </div>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">活跃客户数趋势</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="trend-chart">
+          <div class="chart-y-axis"><span>300</span><span>225</span><span>150</span><span>75</span><span>0</span></div>
+          <div class="chart-bars">
+            <div class="chart-bar-wrap"><span class="chart-value">195</span><div class="chart-bar" style="height:65%"></div><span class="chart-label">周一</span></div>
+            <div class="chart-bar-wrap"><span class="chart-value">234</span><div class="chart-bar" style="height:78%"></div><span class="chart-label">周二</span></div>
+            <div class="chart-bar-wrap"><span class="chart-value">216</span><div class="chart-bar" style="height:72%"></div><span class="chart-label">周三</span></div>
+            <div class="chart-bar-wrap"><span class="chart-value">255</span><div class="chart-bar" style="height:85%"></div><span class="chart-label">周四</span></div>
+            <div class="chart-bar-wrap"><span class="chart-value">276</span><div class="chart-bar" style="height:92%"></div><span class="chart-label">周五</span></div>
+            <div class="chart-bar-wrap"><span class="chart-value">298</span><div class="chart-bar" style="height:100%"></div><span class="chart-label">周六</span></div>
+            <div class="chart-bar-wrap"><span class="chart-value">264</span><div class="chart-bar" style="height:88%"></div><span class="chart-label">周日</span></div>
+          </div>
+        </div>
+        <p class="chart-desc">统计每日打开 APP 或小程序并产生行为的去重客户数</p>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">活跃行为转化漏斗</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="funnel-list">
+          <div class="funnel-item">
+            <div class="funnel-stage"><div class="funnel-name">访问用户</div><div class="funnel-desc">打开 APP/小程序</div></div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%"></div></div>
+            <span class="funnel-value">1,286 人</span>
+          </div>
+          <div class="funnel-item">
+            <div class="funnel-stage"><div class="funnel-name">互动用户</div><div class="funnel-desc">浏览内容/签到/领券</div></div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:76%"></div></div>
+            <span class="funnel-value">978 人</span>
+          </div>
+          <div class="funnel-item">
+            <div class="funnel-stage"><div class="funnel-name">深度互动用户</div><div class="funnel-desc">评价/分享/拼团</div></div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:52%"></div></div>
+            <span class="funnel-value">669 人</span>
+          </div>
+          <div class="funnel-item">
+            <div class="funnel-stage"><div class="funnel-name">付费转化用户</div><div class="funnel-desc">预约/购买/核销</div></div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:35%"></div></div>
+            <span class="funnel-value">450 人</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">成长值分布</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="level-list">
+          <div class="level-item">
+            <div class="level-info"><div class="level-name" style="color:#667eea">高价值客户</div><div class="level-rule">成长值≥500 分</div></div>
+            <div class="level-bar-wrap"><div class="level-bar" style="width:30%;background:linear-gradient(90deg,#667eea,#764ba2)"></div></div>
+            <div class="level-stats"><div class="level-count">386 人</div><div class="level-pct">30%</div></div>
+          </div>
+          <div class="level-item">
+            <div class="level-info"><div class="level-name" style="color:#f59e0b">潜力客户</div><div class="level-rule">200 分≤成长值&lt;500 分</div></div>
+            <div class="level-bar-wrap"><div class="level-bar" style="width:45%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+            <div class="level-stats"><div class="level-count">579 人</div><div class="level-pct">45%</div></div>
+          </div>
+          <div class="level-item">
+            <div class="level-info"><div class="level-name" style="color:#10b981">普通客户</div><div class="level-rule">成长值&lt;200 分</div></div>
+            <div class="level-bar-wrap"><div class="level-bar" style="width:25%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+            <div class="level-stats"><div class="level-count">321 人</div><div class="level-pct">25%</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">用户行为偏好</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="behavior-grid">
+          <div class="behavior-item"><div class="behavior-icon">📅</div><div class="behavior-name">预约服务</div><div class="behavior-val">68.2%</div><div class="behavior-rate">↑ 5.3%</div></div>
+          <div class="behavior-item"><div class="behavior-icon">🛒</div><div class="behavior-name">购买产品</div><div class="behavior-val">45.6%</div><div class="behavior-rate">↑ 3.2%</div></div>
+          <div class="behavior-item"><div class="behavior-icon">⭐</div><div class="behavior-name">评价反馈</div><div class="behavior-val">32.8%</div><div class="behavior-rate">↑ 8.1%</div></div>
+          <div class="behavior-item"><div class="behavior-icon">🎁</div><div class="behavior-name">积分兑换</div><div class="behavior-val">28.4%</div><div class="behavior-rate">↑ 2.5%</div></div>
+          <div class="behavior-item"><div class="behavior-icon">📱</div><div class="behavior-name">浏览内容</div><div class="behavior-val">76.5%</div><div class="behavior-rate">↑ 4.7%</div></div>
+          <div class="behavior-item"><div class="behavior-icon">↗</div><div class="behavior-name">分享推荐</div><div class="behavior-val">15.2%</div><div class="behavior-rate">↑ 12.3%</div></div>
+        </div>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">流失预警与客户分层</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <p class="churn-desc">流失判定：连续 30 天未打开 APP 或未产生任何行为</p>
+        <p class="churn-desc" style="color:#bbb">预警判定：连续 15 天未打开 APP</p>
+        <div class="churn-list">
+          <div class="churn-item">
+            <div class="churn-icon" style="background:#fff7e6;color:#f59e0b">⚠</div>
+            <div class="churn-info"><div class="churn-name">预警客户</div><div class="churn-desc-text">15-30 天未活跃</div></div>
+            <div class="churn-stats"><div class="churn-count">243 人</div><div class="churn-rate" style="color:#f59e0b">18.9%</div></div>
+          </div>
+          <div class="churn-item">
+            <div class="churn-icon" style="background:#fff0f0;color:#ff4d4f">✕</div>
+            <div class="churn-info"><div class="churn-name">已流失客户</div><div class="churn-desc-text">超过 30 天未活跃</div></div>
+            <div class="churn-stats"><div class="churn-count">156 人</div><div class="churn-rate" style="color:#ff4d4f">12.1%</div></div>
+          </div>
+          <div class="churn-item">
+            <div class="churn-icon" style="background:#f6ffed;color:#52c41a">✓</div>
+            <div class="churn-info"><div class="churn-name">健康活跃客户</div><div class="churn-desc-text">15 天内有活跃行为</div></div>
+            <div class="churn-stats"><div class="churn-count">887 人</div><div class="churn-rate" style="color:#52c41a">69.0%</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">活跃客户来源</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="channel-grid">
+          <div class="channel-card">
+            <div class="channel-header"><div class="channel-icon" style="background:#fff0f0">📋</div><span class="channel-name">每日签到</span></div>
+            <div class="channel-users">428 人</div><div class="channel-desc">参与签到活动</div><div class="channel-trend up">↑ 15.3% 较上周</div>
+          </div>
+          <div class="channel-card">
+            <div class="channel-header"><div class="channel-icon" style="background:#f6ffed">🏷</div><span class="channel-name">领券中心</span></div>
+            <div class="channel-users">356 人</div><div class="channel-desc">领取优惠券</div><div class="channel-trend up">↑ 8.7% 较上周</div>
+          </div>
+          <div class="channel-card">
+            <div class="channel-header"><div class="channel-icon" style="background:#fff7e6">👥</div><span class="channel-name">拼团活动</span></div>
+            <div class="channel-users">289 人</div><div class="channel-desc">参与拼团购买</div><div class="channel-trend up">↑ 22.1% 较上周</div>
+          </div>
+          <div class="channel-card">
+            <div class="channel-header"><div class="channel-icon" style="background:#f0f5ff">📄</div><span class="channel-name">内容社区</span></div>
+            <div class="channel-users">267 人</div><div class="channel-desc">浏览/发布笔记</div><div class="channel-trend down">↓ 3.2% 较上周</div>
+          </div>
+          <div class="channel-card">
+            <div class="channel-header"><div class="channel-icon" style="background:#f9f0ff">⭐</div><span class="channel-name">评价晒单</span></div>
+            <div class="channel-users">198 人</div><div class="channel-desc">提交服务评价</div><div class="channel-trend up">↑ 11.5% 较上周</div>
+          </div>
+          <div class="channel-card">
+            <div class="channel-header"><div class="channel-icon" style="background:#e6f7ff">🔔</div><span class="channel-name">消息推送</span></div>
+            <div class="channel-users">145 人</div><div class="channel-desc">通过推送唤醒</div><div class="channel-trend down">↓ 5.8% 较上周</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">活跃客户分层统计</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="segment-list">
+          <div class="segment-item">
+            <div class="segment-icon" style="background:linear-gradient(90deg,#667eea,#764ba2)">👑</div>
+            <div class="segment-info"><div class="segment-name">超级活跃客户</div><div class="segment-desc">近 7 天活跃≥5 天，且有消费行为</div></div>
+            <div class="segment-stats"><div class="segment-count">186 人</div><div class="segment-rate">14.5%</div></div>
+          </div>
+          <div class="segment-item">
+            <div class="segment-icon" style="background:linear-gradient(90deg,#f59e0b,#fbbf24)">⭐</div>
+            <div class="segment-info"><div class="segment-name">活跃客户</div><div class="segment-desc">近 7 天活跃 3-4 天</div></div>
+            <div class="segment-stats"><div class="segment-count">412 人</div><div class="segment-rate">32.0%</div></div>
+          </div>
+          <div class="segment-item">
+            <div class="segment-icon" style="background:linear-gradient(90deg,#10b981,#34d399)">❤</div>
+            <div class="segment-info"><div class="segment-name">一般活跃客户</div><div class="segment-desc">近 7 天活跃 1-2 天</div></div>
+            <div class="segment-stats"><div class="segment-count">523 人</div><div class="segment-rate">40.7%</div></div>
+          </div>
+          <div class="segment-item">
+            <div class="segment-icon" style="background:linear-gradient(90deg,#6b7280,#9ca3af)">🌙</div>
+            <div class="segment-info"><div class="segment-name">低活客户</div><div class="segment-desc">近 7 天仅登录未产生行为</div></div>
+            <div class="segment-stats"><div class="segment-count">165 人</div><div class="segment-rate">12.8%</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="module-card">
+      <div class="module-header">
+        <div class="module-title-row">
+          <span class="module-title-icon"></span>
+          <span class="module-title">沉睡客户召回效果</span>
+        </div>
+      </div>
+      <div class="module-body">
+        <div class="recall-grid">
+          <div class="recall-card">
+            <div class="recall-icon">🎁</div>
+            <div class="recall-name">优惠券召回</div>
+            <div class="recall-desc">向沉睡客户发放专属优惠券</div>
+            <div class="recall-stats"><span>触达 520 人</span><span class="recall-rate">唤醒率 32.5%</span></div>
+          </div>
+          <div class="recall-card">
+            <div class="recall-icon">💬</div>
+            <div class="recall-name">个性化推送</div>
+            <div class="recall-desc">基于偏好推送服务信息</div>
+            <div class="recall-stats"><span>触达 380 人</span><span class="recall-rate">唤醒率 28.3%</span></div>
+          </div>
+          <div class="recall-card">
+            <div class="recall-icon">📞</div>
+            <div class="recall-name">顾问回访</div>
+            <div class="recall-desc">美容顾问一对一电话回访</div>
+            <div class="recall-stats"><span>触达 150 人</span><span class="recall-rate">唤醒率 45.2%</span></div>
+          </div>
+          <div class="recall-card">
+            <div class="recall-icon">✨</div>
+            <div class="recall-name">新品体验</div>
+            <div class="recall-desc">邀请参与新品免费体验</div>
+            <div class="recall-stats"><span>触达 80 人</span><span class="recall-rate">唤醒率 38.7%</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.querySelectorAll('.time-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.time-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

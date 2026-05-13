@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>客户成长分析</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: #f5f6fa;
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    /* 顶部导航栏 */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-back {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #fff;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .navbar-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navbar-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* 时间筛选 */
+    .time-filter {
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .time-btn {
+      padding: 6px 16px;
+      font-size: 14px;
+      color: #666;
+      background: transparent;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .time-btn.active {
+      color: #667eea;
+      background: #f0f2ff;
+      font-weight: 500;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      padding: 12px;
+    }
+
+    /* 数据概览卡片 */
+    .overview-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .overview-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid #e8eaff;
+    }
+
+    .overview-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .overview-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .overview-change {
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .overview-change.up {
+      color: #52c41a;
+    }
+
+    .overview-change.down {
+      color: #ff4d4f;
+    }
+
+    /* 图表区域通用样式 */
+    .chart-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chart-title::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #666;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* 会员等级分布 */
+    .level-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 160px;
+      padding: 0 8px;
+    }
+
+    .level-bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+
+    .level-value {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .level-bar-wrapper {
+      width: 24px;
+      height: 100px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-radius: 4px;
+      transition: height 0.3s ease;
+    }
+
+    .level-bar.v1 { background: linear-gradient(180deg, #95de64 0%, #73d13d 100%); }
+    .level-bar.v2 { background: linear-gradient(180deg, #69c0ff 0%, #40a9ff 100%); }
+    .level-bar.v3 { background: linear-gradient(180deg, #ffd666 0%, #ffc53d 100%); }
+    .level-bar.v4 { background: linear-gradient(180deg, #b37feb 0%, #9254de 100%); }
+    .level-bar.v5 { background: linear-gradient(180deg, #ff7875 0%, #ff4d4f 100%); }
+    .level-bar.v6 { background: linear-gradient(180deg, #ff9c6e 0%, #ff7a45 100%); }
+    .level-bar.v7 { background: linear-gradient(180deg, #597ef7 0%, #2f54eb 100%); }
+
+    .level-name {
+      font-size: 11px;
+      color: #999;
+      margin-top: 8px;
+    }
+
+    /* 成长值趋势 */
+    .trend-chart {
+      height: 180px;
+      position: relative;
+    }
+
+    .trend-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 兑换类型分布 */
+    .pie-chart-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 8px 0;
+    }
+
+    .pie-chart {
+      width: 140px;
+      height: 140px;
+    }
+
+    .pie-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pie-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .pie-legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    .pie-legend-value {
+      font-weight: 600;
+      color: #333;
+      margin-left: 4px;
+    }
+
+    /* 获取渠道分析 */
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .channel-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 4px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .channel-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .channel-icon.note { background: #e6f7ff; color: #1890ff; }
+    .channel-icon.share { background: #fff7e6; color: #fa8c16; }
+    .channel-icon.checkin { background: #f6ffed; color: #52c41a; }
+    .channel-icon.collect { background: #f9f0ff; color: #722ed1; }
+    .channel-icon.invite { background: #fff1f0; color: #f5222d; }
+
+    .channel-name {
+      font-size: 11px;
+      color: #666;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .channel-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-top: 4px;
+    }
+
+    /* 徽章统计 */
+    .badge-category-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .badge-category {
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .badge-category-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .badge-category-icon {
+      font-size: 18px;
+    }
+
+    .badge-category-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .badge-category-desc {
+      font-size: 11px;
+      color: #999;
+      margin-left: auto;
+    }
+
+    .badge-levels {
+      display: flex;
+      gap: 16px;
+    }
+
+    .badge-level-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-level-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .badge-level-dot.bronze { background: linear-gradient(135deg, #ffa39e 0%, #ff7875 100%); }
+    .badge-level-dot.silver { background: linear-gradient(135deg, #d9d9d9 0%, #bfbfbf 100%); }
+    .badge-level-dot.gold { background: linear-gradient(135deg, #ffd666 0%, #ffc53d 100%); }
+
+    .badge-level-count {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .badge-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e8e8e8;
+    }
+
+    .badge-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .badge-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .badge-legend-dot.bronze { background: linear-gradient(135deg, #ffa39e 0%, #ff7875 100%); }
+    .badge-legend-dot.silver { background: linear-gradient(135deg, #d9d9d9 0%, #bfbfbf 100%); }
+    .badge-legend-dot.gold { background: linear-gradient(135deg, #ffd666 0%, #ffc53d 100%); }
+
+    /* 排行榜 */
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .rank-number {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 50%;
+    }
+
+    .rank-number.top1 { background: #fff1f0; color: #ff4d4f; }
+    .rank-number.top2 { background: #fff7e6; color: #fa8c16; }
+    .rank-number.top3 { background: #f6ffed; color: #52c41a; }
+    .rank-number.other { background: #f0f0f0; color: #999; }
+
+    .rank-info {
+      flex: 1;
+    }
+
+    .rank-name {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .rank-desc {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .rank-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .rank-progress {
+      width: 60px;
+      height: 6px;
+      background: #e8e8e8;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rank-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 3px;
+    }
+
+    /* 底部导航 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      border-top: 1px solid #e8e8e8;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 16px;
+      cursor: pointer;
+    }
+
+    .nav-icon {
+      font-size: 22px;
+      color: #999;
+    }
+
+    .nav-item.active .nav-icon {
+      color: #667eea;
+    }
+
+    .nav-text {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .nav-item.active .nav-text {
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    /* 底部留白 */
+    .bottom-space {
+      height: 70px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <button class="navbar-back">←</button>
+    <h1 class="navbar-title">客户成长分析</h1>
+    <div class="navbar-right">
+      <button class="navbar-icon">📊</button>
+      <button class="navbar-icon">⚙️</button>
+    </div>
+  </nav>
+
+  <!-- 时间筛选 -->
+  <div class="time-filter">
+    <button class="time-btn active">今日</button>
+    <button class="time-btn">本周</button>
+    <button class="time-btn">本月</button>
+    <button class="time-btn">自定义</button>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <!-- 数据概览 -->
+    <section class="overview-section">
+      <h2 class="section-title">数据概览</h2>
+      <div class="overview-grid">
+        <div class="overview-card">
+          <div class="overview-label">活跃用户数</div>
+          <div class="overview-value">1,234</div>
+          <div class="overview-change up">
+            <span>↑</span>
+            <span>12.5%</span>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">成长值发放</div>
+          <div class="overview-value">56,789</div>
+          <div class="overview-change up">
+            <span>↑</span>
+            <span>8.3%</span>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">成长值兑换</div>
+          <div class="overview-value">23,456</div>
+          <div class="overview-change down">
+            <span>↓</span>
+            <span>3.2%</span>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">会员升级数</div>
+          <div class="overview-value">89</div>
+          <div class="overview-change up">
+            <span>↑</span>
+            <span>15.6%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 会员等级分布 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">会员等级分布</h2>
+      </div>
+      <div class="level-chart">
+        <div class="level-bar-item">
+          <div class="level-value">156</div>
+          <div class="level-bar-wrapper">
+            <div class="level-bar v1" style="height: 35%;"></div>
+          </div>
+          <div class="level-name">V1</div>
+        </div>
+        <div class="level-bar-item">
+          <div class="level-value">234</div>
+          <div class="level-bar-wrapper">
+            <div class="level-bar v2" style="height: 52%;"></div>
+          </div>
+          <div class="level-name">V2</div>
+        </div>
+        <div class="level-bar-item">
+          <div class="level-value">189</div>
+          <div class="level-bar-wrapper">
+            <div class="level-bar v3" style="height: 42%;"></div>
+          </div>
+          <div class="level-name">V3</div>
+        </div>
+        <div class="level-bar-item">
+          <div class="level-value">145</div>
+          <div class="level-bar-wrapper">
+            <div class="level-bar v4" style="height: 32%;"></div>
+          </div>
+          <div class="level-name">V4</div>
+        </div>
+        <div class="level-bar-item">
+          <div class="level-value">98</div>
+          <div class="level-bar-wrapper">
+            <div class="level-bar v5" style="height: 22%;"></div>
+          </div>
+          <div class="level-name">V5</div>
+        </div>
+        <div class="level-bar-item">
+          <div class="level-value">67</div>
+          <div class="level-bar-wrapper">
+            <div class="level-bar v6" style="height: 15%;"></div>
+          </div>
+          <div class="level-name">V6</div>
+        </div>
+        <div class="level-bar-item">
+          <div class="level-value">34</div>
+          <div class="level-bar-wrapper">
+            <div class="level-bar v7" style="height: 8%;"></div>
+          </div>
+          <div class="level-name">V7</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 成长值趋势 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">成长值趋势</h2>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #667eea;"></div>
+            <span>发放</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #52c41a;"></div>
+            <span>兑换</span>
+          </div>
+        </div>
+      </div>
+      <div class="trend-chart">
+        <svg class="trend-svg" viewBox="0 0 380 180" preserveAspectRatio="none">
+          <!-- 网格线 -->
+          <line x1="0" y1="45" x2="380" y2="45" stroke="#f0f0f0" stroke-width="1"/>
+          <line x1="0" y1="90" x2="380" y2="90" stroke="#f0f0f0" stroke-width="1"/>
+          <line x1="0" y1="135" x2="380" y2="135" stroke="#f0f0f0" stroke-width="1"/>
+
+          <!-- 发放曲线 -->
+          <defs>
+            <linearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.3" />
+              <stop offset="100%" style="stop-color:#667eea;stop-opacity:0" />
+            </linearGradient>
+          </defs>
+          <path d="M 0 120 L 54 100 L 108 110 L 162 80 L 216 60 L 270 85 L 324 55 L 380 40 L 380 180 L 0 180 Z" fill="url(#gradient1)"/>
+          <polyline points="0,120 54,100 108,110 162,80 216,60 270,85 324,55 380,40" fill="none" stroke="#667eea" stroke-width="2"/>
+
+          <!-- 兑换曲线 -->
+          <defs>
+            <linearGradient id="gradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#52c41a;stop-opacity:0.3" />
+              <stop offset="100%" style="stop-color:#52c41a;stop-opacity:0" />
+            </linearGradient>
+          </defs>
+          <path d="M 0 150 L 54 140 L 108 145 L 162 130 L 216 120 L 270 135 L 324 115 L 380 105 L 380 180 L 0 180 Z" fill="url(#gradient2)"/>
+          <polyline points="0,150 54,140 108,145 162,130 216,120 270,135 324,115 380,105" fill="none" stroke="#52c41a" stroke-width="2"/>
+
+          <!-- 数据点 -->
+          <circle cx="0" cy="120" r="4" fill="#667eea"/>
+          <circle cx="54" cy="100" r="4" fill="#667eea"/>
+          <circle cx="108" cy="110" r="4" fill="#667eea"/>
+          <circle cx="162" cy="80" r="4" fill="#667eea"/>
+          <circle cx="216" cy="60" r="4" fill="#667eea"/>
+          <circle cx="270" cy="85" r="4" fill="#667eea"/>
+          <circle cx="324" cy="55" r="4" fill="#667eea"/>
+          <circle cx="380" cy="40" r="4" fill="#667eea"/>
+
+          <circle cx="0" cy="150" r="4" fill="#52c41a"/>
+          <circle cx="54" cy="140" r="4" fill="#52c41a"/>
+          <circle cx="108" cy="145" r="4" fill="#52c41a"/>
+          <circle cx="162" cy="130" r="4" fill="#52c41a"/>
+          <circle cx="216" cy="120" r="4" fill="#52c41a"/>
+          <circle cx="270" cy="135" r="4" fill="#52c41a"/>
+          <circle cx="324" cy="115" r="4" fill="#52c41a"/>
+          <circle cx="380" cy="105" r="4" fill="#52c41a"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 兑换类型分布 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">兑换类型分布</h2>
+      </div>
+      <div class="pie-chart-container">
+        <svg class="pie-chart" viewBox="0 0 140 140">
+          <!-- 优惠券 45% -->
+          <circle cx="70" cy="70" r="50" fill="none" stroke="#667eea" stroke-width="25"
+                  stroke-dasharray="141.37 314.16" stroke-dashoffset="0" transform="rotate(-90 70 70)"/>
+          <!-- 实物商品 35% -->
+          <circle cx="70" cy="70" r="50" fill="none" stroke="#52c41a" stroke-width="25"
+                  stroke-dasharray="109.96 314.16" stroke-dashoffset="-141.37" transform="rotate(-90 70 70)"/>
+          <!-- 抽奖次数 20% -->
+          <circle cx="70" cy="70" r="50" fill="none" stroke="#faad14" stroke-width="25"
+                  stroke-dasharray="62.83 314.16" stroke-dashoffset="-251.33" transform="rotate(-90 70 70)"/>
+        </svg>
+        <div class="pie-legend">
+          <div class="pie-legend-item">
+            <div class="pie-legend-color" style="background: #667eea;"></div>
+            <span>优惠券</span>
+            <span class="pie-legend-value">45%</span>
+          </div>
+          <div class="pie-legend-item">
+            <div class="pie-legend-color" style="background: #52c41a;"></div>
+            <span>实物商品</span>
+            <span class="pie-legend-value">35%</span>
+          </div>
+          <div class="pie-legend-item">
+            <div class="pie-legend-color" style="background: #faad14;"></div>
+            <span>抽奖次数</span>
+            <span class="pie-legend-value">20%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 获取渠道分析 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">获取渠道分析</h2>
+      </div>
+      <div class="channel-grid">
+        <div class="channel-item">
+          <div class="channel-icon checkin">📅</div>
+          <div class="channel-name">活跃分子<br>收藏/签到/预约</div>
+          <div class="channel-value">5,678</div>
+        </div>
+        <div class="channel-item">
+          <div class="channel-icon note">📝</div>
+          <div class="channel-name">社交达人<br>写笔记/点评</div>
+          <div class="channel-value">3,456</div>
+        </div>
+        <div class="channel-item">
+          <div class="channel-icon collect">🎁</div>
+          <div class="channel-name">利益链接者<br>拼团/秒杀</div>
+          <div class="channel-value">4,234</div>
+        </div>
+        <div class="channel-item">
+          <div class="channel-icon share">📢</div>
+          <div class="channel-name">传播大使<br>分享笔记/活动</div>
+          <div class="channel-value">2,134</div>
+        </div>
+        <div class="channel-item">
+          <div class="channel-icon invite">🚀</div>
+          <div class="channel-name">裂变专家<br>分享后成交</div>
+          <div class="channel-value">567</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 徽章获取统计 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">徽章获取统计</h2>
+      </div>
+      <div class="badge-category-list">
+        <!-- 活跃分子徽章 -->
+        <div class="badge-category">
+          <div class="badge-category-header">
+            <span class="badge-category-icon">🔥</span>
+            <span class="badge-category-name">活跃分子</span>
+            <span class="badge-category-desc">收藏、签到、预约</span>
+          </div>
+          <div class="badge-levels">
+            <div class="badge-level-item">
+              <div class="badge-level-dot bronze"></div>
+              <span class="badge-level-count">245</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot silver"></div>
+              <span class="badge-level-count">128</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot gold"></div>
+              <span class="badge-level-count">56</span>
+            </div>
+          </div>
+        </div>
+        <!-- 社交达人徽章 -->
+        <div class="badge-category">
+          <div class="badge-category-header">
+            <span class="badge-category-icon">💬</span>
+            <span class="badge-category-name">社交达人</span>
+            <span class="badge-category-desc">写笔记、写点评</span>
+          </div>
+          <div class="badge-levels">
+            <div class="badge-level-item">
+              <div class="badge-level-dot bronze"></div>
+              <span class="badge-level-count">189</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot silver"></div>
+              <span class="badge-level-count">86</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot gold"></div>
+              <span class="badge-level-count">32</span>
+            </div>
+          </div>
+        </div>
+        <!-- 利益链接者徽章 -->
+        <div class="badge-category">
+          <div class="badge-category-header">
+            <span class="badge-category-icon">🎁</span>
+            <span class="badge-category-name">利益链接者</span>
+            <span class="badge-category-desc">拼团、秒杀、领权益</span>
+          </div>
+          <div class="badge-levels">
+            <div class="badge-level-item">
+              <div class="badge-level-dot bronze"></div>
+              <span class="badge-level-count">312</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot silver"></div>
+              <span class="badge-level-count">156</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot gold"></div>
+              <span class="badge-level-count">68</span>
+            </div>
+          </div>
+        </div>
+        <!-- 传播大使徽章 -->
+        <div class="badge-category">
+          <div class="badge-category-header">
+            <span class="badge-category-icon">📢</span>
+            <span class="badge-category-name">传播大使</span>
+            <span class="badge-category-desc">分享笔记、活动、商品</span>
+          </div>
+          <div class="badge-levels">
+            <div class="badge-level-item">
+              <div class="badge-level-dot bronze"></div>
+              <span class="badge-level-count">178</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot silver"></div>
+              <span class="badge-level-count">92</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot gold"></div>
+              <span class="badge-level-count">41</span>
+            </div>
+          </div>
+        </div>
+        <!-- 裂变专家徽章 -->
+        <div class="badge-category">
+          <div class="badge-category-header">
+            <span class="badge-category-icon">🚀</span>
+            <span class="badge-category-name">裂变专家</span>
+            <span class="badge-category-desc">分享后成交</span>
+          </div>
+          <div class="badge-levels">
+            <div class="badge-level-item">
+              <div class="badge-level-dot bronze"></div>
+              <span class="badge-level-count">98</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot silver"></div>
+              <span class="badge-level-count">45</span>
+            </div>
+            <div class="badge-level-item">
+              <div class="badge-level-dot gold"></div>
+              <span class="badge-level-count">18</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 徽章等级说明 -->
+      <div class="badge-legend">
+        <div class="badge-legend-item">
+          <div class="badge-legend-dot bronze"></div>
+          <span>铜章</span>
+        </div>
+        <div class="badge-legend-item">
+          <div class="badge-legend-dot silver"></div>
+          <span>银章</span>
+        </div>
+        <div class="badge-legend-item">
+          <div class="badge-legend-dot gold"></div>
+          <span>金章</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 任务完成率排行 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">任务完成率排行</h2>
+      </div>
+      <div class="rank-list">
+        <div class="rank-item">
+          <div class="rank-number top1">1</div>
+          <div class="rank-info">
+            <div class="rank-name">每日签到</div>
+            <div class="rank-desc">活跃分子 · 完成率 92%</div>
+          </div>
+          <div class="rank-progress">
+            <div class="rank-progress-bar" style="width: 92%;"></div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top2">2</div>
+          <div class="rank-info">
+            <div class="rank-name">预约服务</div>
+            <div class="rank-desc">活跃分子 · 完成率 85%</div>
+          </div>
+          <div class="rank-progress">
+            <div class="rank-progress-bar" style="width: 85%;"></div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top3">3</div>
+          <div class="rank-info">
+            <div class="rank-name">写美容笔记</div>
+            <div class="rank-desc">社交达人 · 完成率 76%</div>
+          </div>
+          <div class="rank-progress">
+            <div class="rank-progress-bar" style="width: 76%;"></div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">4</div>
+          <div class="rank-info">
+            <div class="rank-name">参与拼团秒杀</div>
+            <div class="rank-desc">利益链接者 · 完成率 58%</div>
+          </div>
+          <div class="rank-progress">
+            <div class="rank-progress-bar" style="width: 58%;"></div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">5</div>
+          <div class="rank-info">
+            <div class="rank-name">分享后成交</div>
+            <div class="rank-desc">裂变专家 · 完成率 43%</div>
+          </div>
+          <div class="rank-progress">
+            <div class="rank-progress-bar" style="width: 43%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 兑换优惠券热门榜 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">兑换优惠券热门榜</h2>
+      </div>
+      <div class="rank-list">
+        <div class="rank-item">
+          <div class="rank-number top1">1</div>
+          <div class="rank-info">
+            <div class="rank-name">护肤套装礼盒</div>
+            <div class="rank-desc">已兑换 1,234 次</div>
+          </div>
+          <div class="rank-value">2,000</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top2">2</div>
+          <div class="rank-info">
+            <div class="rank-name">面膜体验装</div>
+            <div class="rank-desc">已兑换 986 次</div>
+          </div>
+          <div class="rank-value">500</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top3">3</div>
+          <div class="rank-info">
+            <div class="rank-name">美容仪试用</div>
+            <div class="rank-desc">已兑换 756 次</div>
+          </div>
+          <div class="rank-value">3,000</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">4</div>
+          <div class="rank-info">
+            <div class="rank-name">精油按摩券</div>
+            <div class="rank-desc">已兑换 623 次</div>
+          </div>
+          <div class="rank-value">800</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">5</div>
+          <div class="rank-info">
+            <div class="rank-name">美甲服务券</div>
+            <div class="rank-desc">已兑换 512 次</div>
+          </div>
+          <div class="rank-value">600</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 优惠券使用榜 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">优惠券使用榜</h2>
+      </div>
+      <div class="rank-list">
+        <div class="rank-item">
+          <div class="rank-number top1">1</div>
+          <div class="rank-info">
+            <div class="rank-name">新人专享8折券</div>
+            <div class="rank-desc">已使用 2,156 次 · 核销率 89%</div>
+          </div>
+          <div class="rank-value">89%</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top2">2</div>
+          <div class="rank-info">
+            <div class="rank-name">满300减50券</div>
+            <div class="rank-desc">已使用 1,876 次 · 核销率 82%</div>
+          </div>
+          <div class="rank-value">82%</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top3">3</div>
+          <div class="rank-info">
+            <div class="rank-name">生日月双倍积分券</div>
+            <div class="rank-desc">已使用 1,543 次 · 核销率 95%</div>
+          </div>
+          <div class="rank-value">95%</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">4</div>
+          <div class="rank-info">
+            <div class="rank-name">闺蜜同行一人免单</div>
+            <div class="rank-desc">已使用 987 次 · 核销率 76%</div>
+          </div>
+          <div class="rank-value">76%</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">5</div>
+          <div class="rank-info">
+            <div class="rank-name">VIP专属体验券</div>
+            <div class="rank-desc">已使用 756 次 · 核销率 91%</div>
+          </div>
+          <div class="rank-value">91%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户成长值排行 -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">客户成长值排行</h2>
+      </div>
+      <div class="rank-list">
+        <div class="rank-item">
+          <div class="rank-number top1">1</div>
+          <div class="rank-info">
+            <div class="rank-name">张小姐</div>
+            <div class="rank-desc">VIP7 · 消费达人</div>
+          </div>
+          <div class="rank-value">15,680</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top2">2</div>
+          <div class="rank-info">
+            <div class="rank-name">李女士</div>
+            <div class="rank-desc">VIP6 · 忠实会员</div>
+          </div>
+          <div class="rank-value">12,450</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top3">3</div>
+          <div class="rank-info">
+            <div class="rank-name">王女士</div>
+            <div class="rank-desc">VIP6 · 活跃用户</div>
+          </div>
+          <div class="rank-value">10,230</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">4</div>
+          <div class="rank-info">
+            <div class="rank-name">陈小姐</div>
+            <div class="rank-desc">VIP5 · 新晋会员</div>
+          </div>
+          <div class="rank-value">8,560</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">5</div>
+          <div class="rank-info">
+            <div class="rank-name">刘女士</div>
+            <div class="rank-desc">VIP5 · 潜力客户</div>
+          </div>
+          <div class="rank-value">7,890</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 底部留白 -->
+    <div class="bottom-space"></div>
+  </main>
+
+  <!-- 底部导航 -->
+  <nav class="bottom-nav">
+    <div class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-text">首页</span>
+    </div>
+    <div class="nav-item active">
+      <span class="nav-icon">📊</span>
+      <span class="nav-text">数据看板</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span class="nav-text">我的</span>
+    </div>
+  </nav>
+</body>
+</html>

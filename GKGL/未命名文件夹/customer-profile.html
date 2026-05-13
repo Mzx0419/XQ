@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>基本资料</title>
+  <style>
+    /* 全局手机适配 */
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    @media screen and (max-width: 375px) {
+      html {
+        font-size: 14px;
+      }
+    }
+  </style>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #f5f6f7;
+      min-height: 100vh;
+      /* 手机尺寸适配 */
+      max-width: 430px;
+      margin: 0 auto;
+      background-color: #f5f6f7;
+      /* 状态栏适配 */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* 手机框架 */
+    .phone-frame {
+      max-width: 430px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* 顶部导航栏 */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-close {
+      font-size: 24px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .navbar-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .navbar-more {
+      font-size: 20px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .navbar-icon {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #000;
+      border-radius: 50%;
+      background: none;
+    }
+
+    /* 主容器 */
+    .container {
+      padding: 12px;
+    }
+
+    /* 用户信息卡片 */
+    .profile-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px 16px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .invite-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+      color: white;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-bottom-left-radius: 8px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .avatar-container {
+      position: relative;
+      margin-right: 12px;
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 3px solid #ffd76e;
+      object-fit: cover;
+    }
+
+    .avatar-badges {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      gap: 4px;
+    }
+
+    .avatar-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .badge-gender {
+      background-color: #ff6b8a;
+      color: white;
+    }
+
+    .badge-level {
+      background-color: #8b6f47;
+      color: white;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .name-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .name-badge {
+      width: 22px;
+      height: 22px;
+      background-color: #87cefa;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+    }
+
+    .profile-phone {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .phone-icon {
+      color: #ccc;
+      font-size: 18px;
+    }
+
+    .profile-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag-text {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .tag-edit {
+      color: #999;
+      font-size: 18px;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .action-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #e5e5e5;
+      background-color: #fff;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .action-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .action-icon.wechat {
+      color: #07c160;
+    }
+
+    .profile-meta {
+      border-top: 1px solid #f0f0f0;
+      padding-top: 16px;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .meta-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .meta-icon {
+      font-size: 16px;
+    }
+
+    .meta-edit {
+      color: #999;
+      margin-left: 4px;
+    }
+
+    .completion-rate {
+      color: #e02e24;
+      font-weight: 600;
+    }
+
+    .meta-store {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .profile-history {
+      border-top: 1px solid #f0f0f0;
+      padding-top: 12px;
+      font-size: 14px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .history-expand {
+      color: #ccc;
+      font-size: 18px;
+    }
+
+    /* 资产数据卡片 */
+    .assets-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .asset-item {
+      text-align: center;
+      flex: 1;
+      position: relative;
+    }
+
+    .asset-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 6px;
+    }
+
+    .asset-label {
+      font-size: 14px;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .asset-arrow {
+      color: #ccc;
+      font-size: 16px;
+    }
+
+    /* 待办事项卡片 */
+    .todo-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px 16px;
+      margin-bottom: 12px;
+    }
+
+    .todo-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 12px;
+    }
+
+    .todo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .todo-item {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+      padding-left: 50px;
+    }
+
+    .todo-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #333;
+    }
+
+    .todo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .todo-name {
+      font-size: 16px;
+      color: #000;
+    }
+
+    .todo-date {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .todo-arrow {
+      color: #ccc;
+    }
+
+    .todo-sub {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .todo-sub-icon {
+      font-size: 18px;
+    }
+
+    /* 底部标签栏 */
+    .tabbar {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: #ffffff;
+      border-top: 1px solid #e5e5e5;
+      padding: 8px 0;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    /* 主体内容适配 */
+    .container {
+      padding: 12px;
+      padding-bottom: 80px;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      cursor: pointer;
+    }
+
+    .tab-text {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .tab-text.active {
+      color: #87cefa;
+    }
+
+    .tab-arrow {
+      font-size: 12px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <button class="navbar-close">×</button>
+    <h1 class="navbar-title">基本资料</h1>
+    <div class="navbar-right">
+      <button class="navbar-more">⋯</button>
+      <div class="navbar-icon"></div>
+    </div>
+  </nav>
+
+  <!-- 主容器 -->
+  <div class="container">
+    <!-- 用户信息卡片 -->
+    <div class="profile-card">
+      <div class="invite-badge">邀</div>
+
+      <div class="profile-header">
+        <div class="avatar-container">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23fff5d0'/%3E%3Ccircle cx='50' cy='50' r='40' fill='%23ffd76e'/%3E%3Cg transform='translate(25,25) scale(0.5)'%3E%3Cpath d='M30 10 Q50 0 70 10 L70 60 Q70 80 50 80 Q30 80 30 60 Z' fill='%23fff'/%3E%3Ccircle cx='40' cy='35' r='5' fill='%23000'/%3E%3Ccircle cx='60' cy='35' r='5' fill='%23000'/%3E%3Cpath d='M45 50 Q50 55 55 50' stroke='%23ff69b4' stroke-width='2' fill='none'/%3E%3Cpath d='M70 20 L80 10 L85 20' fill='%23ff69b4'/%3E%3C/g%3E%3C/svg%3E" alt="头像" class="avatar">
+          <div class="avatar-badges">
+            <div class="avatar-badge badge-gender">♀</div>
+            <div class="avatar-badge badge-level">白</div>
+          </div>
+        </div>
+
+        <div class="profile-info">
+          <div class="profile-name">
+            <span class="name-text">希希大人</span>
+            <span class="name-badge">会</span>
+          </div>
+          <div class="profile-phone">
+            <span>19522783510</span>
+            <span class="phone-icon">📞</span>
+          </div>
+          <div class="profile-tags">
+            <span class="tag-text">暂无标签</span>
+            <span class="tag-edit">✏️</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="action-btn">
+          <span class="action-icon">📸</span>
+          朋友圈
+        </button>
+        <button class="action-btn" onclick="window.location.href='chat-message.html'">
+          <span class="action-icon wechat">💬</span>
+          私域消息
+        </button>
+      </div>
+
+      <div class="profile-meta">
+        <div class="meta-row">
+          <div class="meta-left">
+            <span class="meta-icon">👤</span>
+            <span>邹里良</span>
+            <span class="meta-icon">👤</span>
+            <span>悦湖店秀秀</span>
+            <span>...</span>
+          </div>
+          <div class="meta-store">
+            <span>🏪</span>
+            悦湖公园一店 1
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-left">
+            <span class="meta-icon">📋</span>
+            <span>档案完成度</span>
+            <span class="completion-rate">9%</span>
+            <span class="meta-edit">✏️</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-history">
+        <span class="history-text">原悦湖公园一店美容部会员原芜湖三店美容部会员</span>
+        <span class="history-expand">⌄</span>
+      </div>
+    </div>
+
+    <!-- 资产数据卡片 -->
+    <div class="assets-card">
+      <div class="asset-item">
+        <div class="asset-value">1208082.37</div>
+        <div class="asset-label">
+          现金总额
+          <span class="asset-arrow">›</span>
+        </div>
+      </div>
+      <div class="asset-item">
+        <div class="asset-value">103791.86</div>
+        <div class="asset-label">
+          消耗总额
+          <span class="asset-arrow">›</span>
+        </div>
+      </div>
+      <div class="asset-item">
+        <div class="asset-value">25</div>
+        <div class="asset-label">
+          到店预约数
+          <span class="asset-arrow">›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 待办事项卡片 -->
+    <div class="todo-card">
+      <h2 class="todo-title">待办事项</h2>
+      <div class="todo-list">
+        <div class="todo-item">
+          <span class="todo-icon">📅</span>
+          <div class="todo-header">
+            <span class="todo-name">到店周期提醒</span>
+            <span class="todo-date">
+              03-07
+              <span class="todo-arrow">›</span>
+            </span>
+          </div>
+          <div class="todo-sub">
+            <span class="todo-sub-icon">📝</span>
+          </div>
+        </div>
+
+        <div class="todo-item">
+          <span class="todo-icon">📞</span>
+          <div class="todo-header">
+            <span class="todo-name">电话回访</span>
+            <span class="todo-date">
+              03-18
+              <span class="todo-arrow">›</span>
+            </span>
+          </div>
+          <div class="todo-sub">
+            <span class="todo-sub-icon">📝</span>
+            <span>回访</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部标签栏 -->
+  <div class="tabbar">
+    <div class="tab-item">
+      <span class="tab-text active">资料</span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-text">资产</span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-text">咨询</span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-text">
+        流水
+        <span class="tab-arrow">⌄</span>
+      </span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-text">
+        动态
+        <span class="tab-arrow">⌄</span>
+      </span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-text">日志</span>
+    </div>
+  </div>
+</body>
+</html>

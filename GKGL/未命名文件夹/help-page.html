@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>收不到验证码？</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .phone-container {
+      width: 375px;
+      min-height: 812px;
+      background-color: #ffffff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .status-bar .icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 16px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e5e5e5;
+      background-color: #fff;
+    }
+
+    .back-btn {
+      font-size: 20px;
+      color: #1a1a1a;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    /* Content */
+    .content {
+      padding: 24px;
+    }
+
+    .help-item {
+      margin-bottom: 24px;
+    }
+
+    .help-item-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .help-item-text {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .help-item-text strong {
+      color: #1a1a1a;
+      font-weight: 500;
+    }
+
+    /* Contact Button */
+    .contact-btn {
+      display: block;
+      width: 100%;
+      background-color: #5b8fff;
+      border: none;
+      color: white;
+      padding: 14px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 32px;
+      transition: background-color 0.2s;
+    }
+
+    .contact-btn:hover {
+      background-color: #4a7fef;
+    }
+
+    .contact-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Bottom Home Indicator */
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      background-color: #1a1a1a;
+      border-radius: 3px;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="time" id="currentTime">9:41</span>
+      <div class="icons">
+        <span>📶</span>
+        <span>📡</span>
+        <span>🔋</span>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <button class="back-btn" onclick="goBack()">❮</button>
+      <h1 class="header-title">收不到验证码？</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="help-item">
+        <p class="help-item-title">1. 检查信号状态</p>
+        <p class="help-item-text">请确认您的手机信号良好，如果在地下室或电梯等信号弱的地方，请移动到开阔地带。</p>
+      </div>
+
+      <div class="help-item">
+        <p class="help-item-title">2. 检查短信拦截</p>
+        <p class="help-item-text">查看手机是否安装了短信拦截软件，验证码短信可能被误判为垃圾短信。</p>
+      </div>
+
+      <div class="help-item">
+        <p class="help-item-title">3. 检查手机号码</p>
+        <p class="help-item-text">确认您输入的手机号码是否正确，验证码已发送到 <strong>135****6208</strong></p>
+      </div>
+
+      <div class="help-item">
+        <p class="help-item-title">4. 稍后再试</p>
+        <p class="help-item-text">运营商短信通道可能延迟，请等待 1-2 分钟后点击"重新发送"尝试。</p>
+      </div>
+
+      <button class="contact-btn" onclick="contactSupport()">联系客服</button>
+    </div>
+
+    <!-- Bottom Home Indicator -->
+    <div class="home-indicator"></div>
+  </div>
+
+  <script>
+    // Update current time
+    function updateTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      document.getElementById('currentTime').textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
+    }
+    updateTime();
+
+    // Go back function
+    function goBack() {
+      // 返回上一页
+      if (window.history.length > 1) {
+        history.back();
+      } else {
+        console.log('没有上一页可返回');
+      }
+    }
+
+    // Contact support function
+    function contactSupport() {
+      alert('客服热线：400-xxx-xxxx');
+      // 这里可以添加实际联系客服的逻辑
+      // 比如拨打电话、跳转客服页面等
+    }
+  </script>
+</body>
+</html>

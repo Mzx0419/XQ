@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>胡灿 - 私域消息</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #f5f6f7;
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+      background-color: #f5f6f7;
+    }
+
+    /* 顶部导航栏 */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-back {
+      font-size: 24px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .navbar-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .navbar-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .navbar-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #6fb3ff;
+      margin-top: 2px;
+    }
+
+    .badge-link {
+      color: #6fb3ff;
+    }
+
+    .badge-member {
+      background-color: #87cefa;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+
+    .badge-level {
+      background-color: #07c160;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .navbar-more {
+      font-size: 20px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .navbar-icon {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #000;
+      border-radius: 50%;
+      background: none;
+    }
+
+    /* 聊天内容区域 */
+    .chat-container {
+      padding: 16px 12px 200px 12px;
+    }
+
+    .chat-container .message-row.right {
+      margin-right: -12px;
+      padding-right: 12px;
+    }
+
+    /* 时间戳 */
+    .timestamp {
+      text-align: center;
+      font-size: 14px;
+      color: #999;
+      margin: 20px 0;
+    }
+
+    /* 消息行 */
+    .message-row {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .message-row.left {
+      justify-content: flex-start;
+    }
+
+    .message-row.right {
+      justify-content: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .message-content {
+      max-width: calc(100% - 50px);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .message-row.left .message-content {
+      align-items: flex-start;
+      margin-left: 10px;
+    }
+
+    .message-row.right .message-content {
+      align-items: flex-end;
+      margin-right: 0;
+      padding-right: 0;
+    }
+
+    .message-row.right {
+      padding-right: 0;
+    }
+
+    .message-sender {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .message-row.right .message-sender {
+      text-align: right;
+    }
+
+    .message-bubble {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.6;
+      word-wrap: break-word;
+    }
+
+    .message-row.left .message-bubble {
+      background-color: #ffffff;
+      color: #000;
+    }
+
+    .message-row.right .message-bubble {
+      background-color: #6fb3ff;
+      color: #ffffff;
+    }
+
+    .message-number {
+      background-color: #6fb3ff;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .emoji-bubble {
+      background-color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 28px;
+    }
+
+    /* 快捷操作栏 */
+    .quick-actions {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      background-color: #ffffff;
+      border-top: 1px solid #e5e5e5;
+      padding: 12px 12px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+
+    .quick-actions-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 12px;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .quick-actions-scroll:active {
+      cursor: grabbing;
+    }
+
+    .quick-actions-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .action-btn {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #e5e5e5;
+      background-color: #fff;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    /* 输入区域 */
+    .input-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .input-field {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      background-color: #f5f5f5;
+      border-radius: 20px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .input-field::placeholder {
+      color: #999;
+    }
+
+    .input-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #ccc;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .send-btn.active {
+      background-color: #07c160;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <button class="navbar-back" onclick="window.history.back()">‹</button>
+    <div class="navbar-center">
+      <div class="navbar-name">
+        是希希大人！
+      </div>
+      <div class="navbar-badges">
+        <span class="badge-link">🔗</span>
+        <span>希希大人</span>
+        <span class="badge-member">会</span>
+      </div>
+    </div>
+    <div class="navbar-right">
+      <button class="navbar-more">⋯</button>
+      <div class="navbar-icon"></div>
+    </div>
+  </nav>
+
+  <!-- 聊天内容区域 -->
+  <div class="chat-container">
+    <!-- 时间戳 -->
+    <div class="timestamp">2025 年 12 月 23 日 10:32</div>
+
+    <!-- 消息 1 - 右侧 -->
+    <div class="message-row right">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='35' r='20' fill='%23ffd76e'/%3E%3Crect x='35' y='55' width='30' height='35' fill='%23fff'/%3E%3C/svg%3E" alt="头像" class="message-avatar">
+      <div class="message-content">
+        <span class="message-sender">熊家明</span>
+        <div class="message-bubble">你好</div>
+      </div>
+    </div>
+
+    <!-- 消息 2 - 左侧 -->
+    <div class="message-row left">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ffb6c1'/%3E%3Ccircle cx='50' cy='40' r='25' fill='%23fff'/%3E%3Crect x='35' y='65' width='30' height='25' fill='%23fff'/%3E%3C/svg%3E" alt="头像" class="message-avatar">
+      <div class="message-content">
+        <div class="emoji-bubble">🤗</div>
+      </div>
+    </div>
+
+    <!-- 消息 3 - 右侧（预约成功） -->
+    <div class="message-row right">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='35' r='20' fill='%23ffd76e'/%3E%3Crect x='35' y='55' width='30' height='35' fill='%23fff'/%3E%3C/svg%3E" alt="头像" class="message-avatar">
+      <div class="message-content">
+        <span class="message-sender">熊家明</span>
+        <div class="message-bubble">
+          感谢您的信任，您已预约成功【光子嫩肤】<br>
+          具体信息如下：<br>
+          预约时间：2025 年 12 月 24 日 09:00<br>
+          预约员工：未指定<br>
+          预约地址：上海，请合理安排时间提前到达~<br>
+          点击 http://7sen.cn/PsmJ，查看预约详情，我们期待您的到来
+        </div>
+      </div>
+    </div>
+
+    <!-- 消息 4 - 右侧（敏感皮话术） -->
+    <div class="message-row right">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='35' r='20' fill='%23ffd76e'/%3E%3Crect x='35' y='55' width='30' height='35' fill='%23fff'/%3E%3C/svg%3E" alt="头像" class="message-avatar">
+      <div class="message-content">
+        <span class="message-sender">熊家明</span>
+        <div class="message-bubble">
+          敏敏皮是因为屏障受损导致的，导致屏障受损的的原因分为三大类，如下：<br>
+          ①过度清洁、护肤品使用的不正确、频繁敷面膜<br>
+          ②在院内频繁做护理、护理的项目不适合、不做修护<br>
+          ③先天性的敏感皮。
+        </div>
+      </div>
+    </div>
+
+    <!-- 时间戳 -->
+    <div class="timestamp">2025 年 12 月 23 日 13:50</div>
+  </div>
+
+  <!-- 快捷操作栏 + 输入区域 -->
+  <div class="quick-actions">
+    <div class="quick-actions-scroll" id="quickActionsSlider">
+      <button class="action-btn" onclick="window.location.href='coupon-list.html'">私发优惠券</button>
+      <button class="action-btn" onclick="window.location.href='new-appointment.html'">新建预约</button>
+      <button class="action-btn" onclick="window.location.href='new-todo.html'">新建待办</button>
+      <button class="action-btn" onclick="window.location.href='chat-history.html'">历史聊天</button>
+      <button class="action-btn" onclick="window.location.href='script-library.html'">话术库</button>
+    </div>
+
+    <!-- 输入区域 -->
+    <div class="input-area">
+      <input type="text" class="input-field" placeholder="输入消息...">
+      <div class="input-icons">
+        <button class="icon-btn">😊</button>
+        <button class="icon-btn">🖼️</button>
+        <button class="send-btn">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 鼠标拖动滑动效果
+    const slider = document.getElementById('quickActionsSlider');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      slider.style.cursor = 'grabbing';
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+
+    slider.addEventListener('mouseleave', () => {
+      isDown = false;
+      slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mouseup', () => {
+      isDown = false;
+      slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 2;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+
+    // 触摸滑动支持（移动端）
+    slider.addEventListener('touchstart', (e) => {
+      isDown = true;
+      startX = e.touches[0].pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+
+    slider.addEventListener('touchend', () => {
+      isDown = false;
+    });
+
+    slider.addEventListener('touchmove', (e) => {
+      if (!isDown) return;
+      const x = e.touches[0].pageX - slider.offsetLeft;
+      const walk = (x - startX) * 2;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+  </script>
+</body>
+</html>

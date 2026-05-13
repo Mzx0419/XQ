@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>客户成长分析</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #f5f6f7;
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    /* 顶部导航栏 */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-back {
+      font-size: 24px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .navbar-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .navbar-icon {
+      font-size: 20px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* 时间筛选 */
+    .time-filter {
+      display: flex;
+      justify-content: space-around;
+      background-color: #ffffff;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .time-btn {
+      font-size: 14px;
+      color: #666;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 16px;
+    }
+
+    .time-btn.active {
+      background-color: #6fb3ff;
+      color: white;
+    }
+
+    /* 内容区域 */
+    .content {
+      padding: 12px;
+    }
+
+    /* 数据概览卡片 */
+    .overview-section {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-more {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .overview-item {
+      text-align: center;
+      padding: 16px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .overview-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 8px;
+    }
+
+    .overview-label {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .overview-trend {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .trend-up {
+      color: #51cf66;
+    }
+
+    .trend-down {
+      color: #ff6b6b;
+    }
+
+    /* 会员等级分布 */
+    .level-section {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .level-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 150px;
+      padding: 20px 0;
+    }
+
+    .level-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bar {
+      width: 32px;
+      background: linear-gradient(180deg, #6fb3ff 0%, #4a90e2 100%);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .bar:hover {
+      opacity: 0.8;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+    }
+
+    .bar-label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* 通用卡片样式 */
+    .card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    /* 成长值趋势 */
+    .trend-chart {
+      height: 200px;
+      position: relative;
+      margin-top: 20px;
+    }
+
+    .trend-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+    }
+
+    .trend-points {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 100%;
+      padding: 0 10px;
+    }
+
+    .trend-point {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .point-dot {
+      width: 12px;
+      height: 12px;
+      background-color: #6fb3ff;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(111, 179, 255, 0.4);
+      cursor: pointer;
+    }
+
+    .point-date {
+      font-size: 11px;
+      color: #999;
+    }
+
+    /* 列表项 */
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+    }
+
+    .list-item:last-child {
+      border-bottom: none;
+    }
+
+    .list-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .list-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .list-info {
+      flex: 1;
+    }
+
+    .list-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #000;
+      margin-bottom: 4px;
+    }
+
+    .list-subtitle {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .list-right {
+      text-align: right;
+    }
+
+    .list-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 4px;
+    }
+
+    .list-subvalue {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* 徽章 */
+    .badge-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+    }
+
+    .badge-item:last-child {
+      border-bottom: none;
+    }
+
+    .badge-icon {
+      font-size: 32px;
+      margin-right: 12px;
+    }
+
+    .badge-info {
+      flex: 1;
+    }
+
+    .badge-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #000;
+      margin-bottom: 4px;
+    }
+
+    .badge-desc {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .badge-count {
+      font-size: 16px;
+      font-weight: 600;
+      color: #6fb3ff;
+    }
+
+    /* 进度条 */
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background-color: #f0f0f0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6fb3ff 0%, #4a90e2 100%);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    /* 底部导航 */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: #ffffff;
+      border-top: 1px solid #e5e5e5;
+      padding: 8px 0;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 16px;
+      cursor: pointer;
+    }
+
+    .nav-icon {
+      font-size: 20px;
+    }
+
+    .nav-text {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .nav-item.active .nav-text {
+      color: #6fb3ff;
+      font-weight: 500;
+    }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-text {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <button class="navbar-back" onclick="window.history.back()">‹</button>
+    <h1 class="navbar-title">客户成长分析</h1>
+    <div class="navbar-right">
+      <button class="navbar-icon" onclick="alert('导出报表功能')">📥</button>
+      <button class="navbar-icon" onclick="alert('刷新数据')">🔄</button>
+    </div>
+  </nav>
+
+  <!-- 时间筛选 -->
+  <div class="time-filter">
+    <button class="time-btn" onclick="switchTime(this, 'today')">今日</button>
+    <button class="time-btn active" onclick="switchTime(this, 'week')">本周</button>
+    <button class="time-btn" onclick="switchTime(this, 'month')">本月</button>
+    <button class="time-btn" onclick="switchTime(this, 'custom')">自定义</button>
+  </div>
+
+  <!-- 内容区域 -->
+  <div class="content">
+    <!-- 数据概览 -->
+    <div class="overview-section">
+      <div class="section-title">
+        <span>数据概览</span>
+        <span class="section-more" onclick="alert('查看明细')">明细 ›</span>
+      </div>
+      <div class="overview-grid">
+        <div class="overview-item" onclick="alert('活跃用户明细')">
+          <div class="overview-value">1,256</div>
+          <div class="overview-label">活跃用户数</div>
+          <div class="overview-trend trend-up">
+            <span>🔼</span>
+            <span>12%</span>
+          </div>
+        </div>
+        <div class="overview-item" onclick="alert('成长值发放明细')">
+          <div class="overview-value">58,420</div>
+          <div class="overview-label">成长值发放</div>
+          <div class="overview-trend trend-up">
+            <span>🔼</span>
+            <span>8%</span>
+          </div>
+        </div>
+        <div class="overview-item" onclick="alert('成长值兑换明细')">
+          <div class="overview-value">32,180</div>
+          <div class="overview-label">成长值兑换</div>
+          <div class="overview-trend trend-up">
+            <span>🔼</span>
+            <span>15%</span>
+          </div>
+        </div>
+        <div class="overview-item" onclick="alert('会员升级明细')">
+          <div class="overview-value">89</div>
+          <div class="overview-label">会员升级数</div>
+          <div class="overview-trend trend-up">
+            <span>🔼</span>
+            <span>5%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 会员等级分布 -->
+    <div class="level-section">
+      <div class="section-title">
+        <span>会员等级分布</span>
+        <span class="section-more" onclick="alert('查看明细')">明细 ›</span>
+      </div>
+      <div class="level-chart">
+        <div class="level-bar" onclick="alert('查看 V1 用户列表')">
+          <div class="bar" style="height: 80px;">
+            <span class="bar-value">320</span>
+          </div>
+          <span class="bar-label">V1</span>
+        </div>
+        <div class="level-bar" onclick="alert('查看 V2 用户列表')">
+          <div class="bar" style="height: 70px;">
+            <span class="bar-value">280</span>
+          </div>
+          <span class="bar-label">V2</span>
+        </div>
+        <div class="level-bar" onclick="alert('查看 V3 用户列表')">
+          <div class="bar" style="height: 65px;">
+            <span class="bar-value">250</span>
+          </div>
+          <span class="bar-label">V3</span>
+        </div>
+        <div class="level-bar" onclick="alert('查看 V4 用户列表')">
+          <div class="bar" style="height: 50px;">
+            <span class="bar-value">180</span>
+          </div>
+          <span class="bar-label">V4</span>
+        </div>
+        <div class="level-bar" onclick="alert('查看 V5 用户列表')">
+          <div class="bar" style="height: 35px;">
+            <span class="bar-value">120</span>
+          </div>
+          <span class="bar-label">V5</span>
+        </div>
+        <div class="level-bar" onclick="alert('查看 V6 用户列表')">
+          <div class="bar" style="height: 25px;">
+            <span class="bar-value">80</span>
+          </div>
+          <span class="bar-label">V6</span>
+        </div>
+        <div class="level-bar" onclick="alert('查看 V7 用户列表')">
+          <div class="bar" style="height: 15px;">
+            <span class="bar-value">26</span>
+          </div>
+          <span class="bar-label">V7</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 成长值获取趋势 -->
+    <div class="card">
+      <div class="section-title">
+        <span>成长值获取趋势</span>
+        <span class="section-more" onclick="alert('查看明细')">明细 ›</span>
+      </div>
+      <div class="trend-chart">
+        <svg class="trend-line" viewBox="0 0 400 200" preserveAspectRatio="none">
+          <polyline
+            fill="none"
+            stroke="#6fb3ff"
+            stroke-width="2"
+            points="0,150 57,120 114,100 171,80 228,60 285,40 342,30 400,20"
+          />
+          <polygon
+            fill="rgba(111, 179, 255, 0.1)"
+            points="0,150 0,200 400,200 400,20 342,30 285,40 228,60 171,80 114,100 57,120 0,150"
+          />
+        </svg>
+        <div class="trend-points">
+          <div class="trend-point" onclick="alert('12/18 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/18</span>
+          </div>
+          <div class="trend-point" onclick="alert('12/19 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/19</span>
+          </div>
+          <div class="trend-point" onclick="alert('12/20 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/20</span>
+          </div>
+          <div class="trend-point" onclick="alert('12/21 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/21</span>
+          </div>
+          <div class="trend-point" onclick="alert('12/22 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/22</span>
+          </div>
+          <div class="trend-point" onclick="alert('12/23 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/23</span>
+          </div>
+          <div class="trend-point" onclick="alert('12/24 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/24</span>
+          </div>
+          <div class="trend-point" onclick="alert('12/25 数据详情')">
+            <div class="point-dot"></div>
+            <span class="point-date">12/25</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 徽章获取统计 -->
+    <div class="card">
+      <div class="section-title">
+        <span>徽章获取统计</span>
+        <span class="section-more" onclick="alert('查看明细')">明细 ›</span>
+      </div>
+      <div class="badge-item" onclick="alert('查看铜章用户列表')">
+        <div class="badge-icon">🥉</div>
+        <div class="badge-info">
+          <div class="badge-name">铜章</div>
+          <div class="badge-desc">完成单枚徽章对应全部任务</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 65%;"></div>
+          </div>
+        </div>
+        <div class="badge-count">856 人</div>
+      </div>
+      <div class="badge-item" onclick="alert('查看银章用户列表')">
+        <div class="badge-icon">🥈</div>
+        <div class="badge-info">
+          <div class="badge-name">银章</div>
+          <div class="badge-desc">铜章升级至银级</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 35%;"></div>
+          </div>
+        </div>
+        <div class="badge-count">328 人</div>
+      </div>
+      <div class="badge-item" onclick="alert('查看金章用户列表')">
+        <div class="badge-icon">🥇</div>
+        <div class="badge-info">
+          <div class="badge-name">金章</div>
+          <div class="badge-desc">银级升级至金级</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 15%;"></div>
+          </div>
+        </div>
+        <div class="badge-count">126 人</div>
+      </div>
+    </div>
+
+    <!-- 任务完成率排行 -->
+    <div class="card">
+      <div class="section-title">
+        <span>任务完成率排行</span>
+        <span class="section-more" onclick="alert('查看明细')">明细 ›</span>
+      </div>
+      <div class="list-item" onclick="alert('查看笔记收藏用户列表')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #e3f2fd;">📝</div>
+          <div class="list-info">
+            <div class="list-title">笔记收藏</div>
+            <div class="list-subtitle">1,256 人完成</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value" style="color: #6fb3ff;">68%</div>
+          <div class="progress-bar" style="width: 80px;">
+            <div class="progress-fill" style="width: 68%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看小程序签到用户列表')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fff3e0;">📅</div>
+          <div class="list-info">
+            <div class="list-title">小程序签到</div>
+            <div class="list-subtitle">986 人完成</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value" style="color: #ff9800;">52%</div>
+          <div class="progress-bar" style="width: 80px;">
+            <div class="progress-fill" style="width: 52%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看主动预约用户列表')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #e8f5e9;">📞</div>
+          <div class="list-info">
+            <div class="list-title">主动预约</div>
+            <div class="list-subtitle">856 人完成</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value" style="color: #4caf50;">45%</div>
+          <div class="progress-bar" style="width: 80px;">
+            <div class="progress-fill" style="width: 45%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看分享笔记用户列表')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fce4ec;">📤</div>
+          <div class="list-info">
+            <div class="list-title">分享笔记</div>
+            <div class="list-subtitle">720 人完成</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value" style="color: #e91e63;">38%</div>
+          <div class="progress-bar" style="width: 80px;">
+            <div class="progress-fill" style="width: 38%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看分享成交用户列表')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #f3e5f5;">💰</div>
+          <div class="list-info">
+            <div class="list-title">分享成交</div>
+            <div class="list-subtitle">226 人完成</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value" style="color: #9c27b0;">12%</div>
+          <div class="progress-bar" style="width: 80px;">
+            <div class="progress-fill" style="width: 12%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 兑换商品热门榜 -->
+    <div class="card">
+      <div class="section-title">
+        <span>兑换商品热门榜</span>
+        <span class="section-more" onclick="alert('查看明细')">明细 ›</span>
+      </div>
+      <div class="list-item" onclick="alert('查看 20 元无门槛券兑换记录')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #ffebee;">🎫</div>
+          <div class="list-info">
+            <div class="list-title">20 元无门槛券</div>
+            <div class="list-subtitle">库存 544/1000</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">456 次</div>
+          <div class="list-subvalue">TOP 1</div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看满 200 减 10 券兑换记录')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #e3f2fd;">🎫</div>
+          <div class="list-info">
+            <div class="list-title">满 200 减 10 券</div>
+            <div class="list-subtitle">库存 672/1000</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">328 次</div>
+          <div class="list-subvalue">TOP 2</div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看闺蜜卡兑换记录')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fce4ec;">🎁</div>
+          <div class="list-info">
+            <div class="list-title">闺蜜卡一张</div>
+            <div class="list-subtitle">库存 314/500</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">186 次</div>
+          <div class="list-subvalue">TOP 3</div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看 100 元红包兑换记录')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fff3e0;">🧧</div>
+          <div class="list-info">
+            <div class="list-title">100 元红包</div>
+            <div class="list-subtitle">库存 844/1000</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">156 次</div>
+          <div class="list-subvalue">TOP 4</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 客户成长值排行 -->
+    <div class="card">
+      <div class="section-title">
+        <span>客户成长值排行</span>
+        <span class="section-more" onclick="alert('查看明细')">明细 ›</span>
+      </div>
+      <div class="list-item" onclick="alert('查看客户详情')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fff3e0; font-size: 16px; font-weight: 600;">1</div>
+          <div class="list-info">
+            <div class="list-title">希希大人</div>
+            <div class="list-subtitle">V7 · 🥇金章</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">8,560</div>
+          <div class="list-subvalue">成长值</div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看客户详情')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #f5f5f5; font-size: 16px; font-weight: 600;">2</div>
+          <div class="list-info">
+            <div class="list-title">张小姐</div>
+            <div class="list-subtitle">V6 · 🥈银章</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">7,280</div>
+          <div class="list-subvalue">成长值</div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看客户详情')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fff8e1; font-size: 16px; font-weight: 600;">3</div>
+          <div class="list-info">
+            <div class="list-title">李女士</div>
+            <div class="list-subtitle">V6 · 🥈银章</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">6,450</div>
+          <div class="list-subvalue">成长值</div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看客户详情')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fff8e1; font-size: 16px; font-weight: 600;">4</div>
+          <div class="list-info">
+            <div class="list-title">王女士</div>
+            <div class="list-subtitle">V5 · 🥈银章</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">5,820</div>
+          <div class="list-subvalue">成长值</div>
+        </div>
+      </div>
+      <div class="list-item" onclick="alert('查看客户详情')">
+        <div class="list-left">
+          <div class="list-icon" style="background-color: #fff8e1; font-size: 16px; font-weight: 600;">5</div>
+          <div class="list-info">
+            <div class="list-title">赵小姐</div>
+            <div class="list-subtitle">V5 · 🥉铜章</div>
+          </div>
+        </div>
+        <div class="list-right">
+          <div class="list-value">5,260</div>
+          <div class="list-subvalue">成长值</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 切换时间筛选
+    function switchTime(btn, type) {
+      document.querySelectorAll('.time-btn').forEach(item => {
+        item.classList.remove('active');
+      });
+      btn.classList.add('active');
+
+      // 这里可以添加刷新数据的逻辑
+      console.log('切换到时间范围:', type);
+    }
+  </script>
+</body>
+</html>
