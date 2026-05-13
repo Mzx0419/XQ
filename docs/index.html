@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美股行情可视化报告 - 2026年5月12日</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --accent-gold: #d4af37;
+            --accent-green: #00d084;
+            --accent-red: #ff4757;
+            --text-primary: #f0f0f5;
+            --text-secondary: #8a8a9a;
+            --border-subtle: #1e1e2e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 208, 132, 0.05) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #f4e5c2 50%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .icon-market { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); }
+        .icon-stock { background: rgba(0, 208, 132, 0.15); color: var(--accent-green); }
+        .icon-alert { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); }
+
+        .index-card {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .index-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            border-left: 3px solid transparent;
+        }
+
+        .index-item.up { border-left-color: var(--accent-green); }
+        .index-item.down { border-left-color: var(--accent-red); }
+
+        .index-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .index-value {
+            text-align: right;
+        }
+
+        .index-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .index-change {
+            font-size: 0.85rem;
+            margin-top: 3px;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stock-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+
+        .stock-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .stock-item.alert {
+            border-color: rgba(255, 71, 87, 0.4);
+            background: rgba(255, 71, 87, 0.05);
+        }
+
+        .stock-info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .stock-info span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .stock-price {
+            text-align: right;
+        }
+
+        .stock-price .price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stock-price .change {
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        .alert-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--accent-red);
+            font-size: 0.7rem;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .analysis-section {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .analysis-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .analysis-list li {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        .analysis-list h4 {
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .analysis-list p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .dashboard { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>美股行情可视化报告</h1>
+            <p class="subtitle">2026年5月12日收盘数据</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- 大盘指数卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">大盘指数</h3>
+                    <div class="card-icon icon-market">📊</div>
+                </div>
+                <div class="index-card">
+                    <div class="index-item down">
+                        <span class="index-name">标普 500</span>
+                        <div class="index-value">
+                            <span class="index-price">7,400.96</span>
+                            <span class="index-change negative">-11.88 (-0.16%)</span>
+                        </div>
+                    </div>
+                    <div class="index-item down">
+                        <span class="index-name">纳斯达克</span>
+                        <div class="index-value">
+                            <span class="index-price">26,088.20</span>
+                            <span class="index-change negative">-185.92 (-0.71%)</span>
+                        </div>
+                    </div>
+                    <div class="index-item up">
+                        <span class="index-name">道琼斯</span>
+                        <div class="index-value">
+                            <span class="index-price">49,760.56</span>
+                            <span class="index-change positive">+56.09 (+0.11%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 涨跌幅分布图表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">个股涨跌分布</h3>
+                    <div class="card-icon icon-stock">📈</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="changeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 异常波动股票 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">异常波动警报</h3>
+                    <div class="card-icon icon-alert">⚠️</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">异常波动股</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">-11.5%</span>
+                        <span class="stat-label">最大跌幅</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">下跌超3%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 股票列表 -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <h3 class="card-title">12只监控股票行情</h3>
+                    <div class="card-icon icon-stock">💼</div>
+                </div>
+                <div class="stock-grid">
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>苹果 AAPL</h4>
+                            <span>科技巨头</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$294.49</span>
+                            <span class="change positive">+0.62%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>微软 MSFT</h4>
+                            <span>云计算/AI</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$407.81</span>
+                            <span class="change negative">-1.09%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>谷歌 GOOGL</h4>
+                            <span>搜索/AI</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$387.25</span>
+                            <span class="change negative">-0.36%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item alert">
+                        <div class="stock-info">
+                            <h4>高通 QCOM <span class="alert-badge">异常</span></h4>
+                            <span>半导体/5G</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$210.31</span>
+                            <span class="change negative">-11.46%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>波音 BA</h4>
+                            <span>航空航天</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$236.87</span>
+                            <span class="change negative">-0.56%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>AMD</h4>
+                            <span>半导体/GPU</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$448.30</span>
+                            <span class="change negative">-2.29%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>白银 AGQ</h4>
+                            <span>贵金属ETF</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$154.10</span>
+                            <span class="change positive">+1.24%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>特斯拉 TSLA</h4>
+                            <span>电动车</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$433.45</span>
+                            <span class="change negative">-2.60%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>英伟达 NVDA</h4>
+                            <span>AI芯片</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$220.78</span>
+                            <span class="change positive">+0.61%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item alert">
+                        <div class="stock-info">
+                            <h4>DRAM <span class="alert-badge">异常</span></h4>
+                            <span>内存ETF</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$51.30</span>
+                            <span class="change negative">-6.86%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item alert">
+                        <div class="stock-info">
+                            <h4>闪迪 SNDK <span class="alert-badge">异常</span></h4>
+                            <span>存储芯片</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$1,452.02</span>
+                            <span class="change negative">-6.17%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item">
+                        <div class="stock-info">
+                            <h4>美光 MU</h4>
+                            <span>内存芯片</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="price">$765.77</span>
+                            <span class="change negative">-3.72%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 深度分析 -->
+            <div class="card full-width analysis-section">
+                <div class="card-header">
+                    <h3 class="card-title">异常波动深度分析</h3>
+                    <div class="card-icon icon-alert">🔍</div>
+                </div>
+                <ul class="analysis-list">
+                    <li>
+                        <h4>高通 (QCOM) - 暴跌11.46%</h4>
+                        <p>前一日因分析师升级大涨8.4%创52周新高，次日出现剧烈获利回吐。股价从4月低点快速上涨超90%，技术性回调压力巨大。</p>
+                    </li>
+                    <li>
+                        <h4>Roundhill DRAM ETF - 下跌6.86%</h4>
+                        <p>重仓内存芯片股集体回调，前期涨幅过大（月涨70%），AI内存需求过热预期修正。</p>
+                    </li>
+                    <li>
+                        <h4>闪迪 (SNDK) - 下跌6.17%</h4>
+                        <p>2025年从西部数据分拆后年内暴涨3400%，NAND市场周期性调整担忧，高估值引发获利盘。</p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 特朗普访华影响分析 -->
+            <div class="card full-width" style="border: 2px solid rgba(212, 175, 55, 0.4); background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, transparent 100%);">
+                <div class="card-header">
+                    <h3 class="card-title">🇺🇸🇨🇳 特朗普访华影响分析（5月13-15日）</h3>
+                    <div class="card-icon icon-market">🌏</div>
+                </div>
+                <div style="margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px;">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+                        <strong style="color: var(--accent-gold);">核心背景：</strong>16位美企CEO随行，包括马斯克（特斯拉）、库克（苹果）、高通/美光CEO。市场预期中美科技关税缓和、出口管制可能松动。
+                    </p>
+                </div>
+                <div class="stock-grid">
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🔥 特斯拉 TSLA</h4>
+                            <span style="color: var(--accent-green);">强烈推荐 | 目标$480-500</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">马斯克随行</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">FSD入华+储能合作</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🔥 高通 QCOM</h4>
+                            <span style="color: var(--accent-green);">强烈推荐 | 目标$240-260</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">CEO随行</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">超跌反弹20-25%</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🟢 苹果 AAPL</h4>
+                            <span style="color: var(--accent-green);">推荐 | 目标$305-320</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">库克随行</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">iPhone关税减免</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🟢 美光 MU</h4>
+                            <span style="color: var(--accent-green);">推荐 | 目标$850-900</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">CEO随行</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">中国市场份额恢复</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🟢 波音 BA</h4>
+                            <span style="color: var(--accent-green);">推荐 | 目标$250-270</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">飞机采购协议</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">中国或采购大单</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🟢 AMD</h4>
+                            <span style="color: var(--accent-green);">推荐 | 目标$480-520</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">行业景气回升</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">MI300竞争力强</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🟢 微软 MSFT</h4>
+                            <span style="color: var(--accent-green);">推荐 | 目标$420-440</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">Azure在华扩张</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">AI合作预期</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-green);">
+                        <div class="stock-info">
+                            <h4>🟢 谷歌 GOOGL</h4>
+                            <span style="color: var(--accent-green);">推荐 | 目标$400-420</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change positive">AI全球需求</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">关联度较低</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-red);">
+                        <div class="stock-info">
+                            <h4>⚠️ 英伟达 NVDA</h4>
+                            <span style="color: var(--accent-red);">谨慎 | 目标$210-230</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change negative">黄仁勋缺席</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">H200/Blackwell管制难松</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-red);">
+                        <div class="stock-info">
+                            <h4>⚠️ 闪迪 SNDK</h4>
+                            <span style="color: var(--accent-red);">减仓 | 高波动$1200-1600</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change negative">年内+3400%</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">估值过高，获利了结</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-red);">
+                        <div class="stock-info">
+                            <h4>⚠️ DRAM ETF</h4>
+                            <span style="color: var(--accent-red);">观望 | 区间$48-58</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change negative">前期涨幅过大</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">等待回调到位</span>
+                        </div>
+                    </div>
+                    <div class="stock-item" style="border-left: 3px solid var(--accent-red);">
+                        <div class="stock-info">
+                            <h4>⚠️ 白银 AGQ</h4>
+                            <span style="color: var(--accent-red);">持有 | 区间$150-165</span>
+                        </div>
+                        <div class="stock-price">
+                            <span class="change negative">避险配置</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">中美缓和或降避险需求</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 详细后续判断表格 -->
+                <div style="margin-top: 25px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 12px;">
+                    <h4 style="color: var(--accent-gold); margin-bottom: 15px; font-size: 1.1rem;">📊 详细后续判断与操作策略</h4>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-subtle);">
+                                <th style="text-align: left; padding: 10px; color: var(--text-secondary);">股票</th>
+                                <th style="text-align: left; padding: 10px; color: var(--text-secondary);">后续判断</th>
+                                <th style="text-align: left; padding: 10px; color: var(--text-secondary);">操作策略</th>
+                                <th style="text-align: left; padding: 10px; color: var(--text-secondary);">时间周期</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 10px; color: var(--accent-green);">🔥 TSLA</td>
+                                <td style="padding: 10px;">FSD入华落地，储能业务突破</td>
+                                <td style="padding: 10px;"><strong>积极增持</strong></td>
+                                <td style="padding: 10px;">1-3个月</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 10px; color: var(--accent-green);">🔥 QCOM</td>
+                                <td style="padding: 10px;">恢复华为供货，5G芯片解禁</td>
+                                <td style="padding: 10px;"><strong>逢低吸纳</strong></td>
+                                <td style="padding: 10px;">2-4周</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 10px; color: var(--accent-green);">🟢 AAPL</td>
+                                <td style="padding: 10px;">iPhone关税降10-15%，销量提升</td>
+                                <td style="padding: 10px;"><strong>持有增持</strong></td>
+                                <td style="padding: 10px;">1-2个月</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 10px; color: var(--accent-green);">🟢 MU</td>
+                                <td style="padding: 10px;">中国市场份额恢复，HBM需求强劲</td>
+                                <td style="padding: 10px;"><strong>持有</strong></td>
+                                <td style="padding: 10px;">3-6个月</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 10px; color: var(--accent-green);">🟢 BA</td>
+                                <td style="padding: 10px;">中国采购波音飞机大单预期</td>
+                                <td style="padding: 10px;"><strong>逢低增持</strong></td>
+                                <td style="padding: 10px;">1-3个月</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 10px; color: var(--accent-red);">⚠️ NVDA</td>
+                                <td style="padding: 10px;">黄仁勋缺席，管制难松，区间波动</td>
+                                <td style="padding: 10px;"><strong>谨慎持有</strong></td>
+                                <td style="padding: 10px;">观望</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; color: var(--accent-red);">⚠️ SNDK</td>
+                                <td style="padding: 10px;">年内涨3400%，估值过高需回调</td>
+                                <td style="padding: 10px;"><strong>获利减仓</strong></td>
+                                <td style="padding: 10px;">立即</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 71, 87, 0.1); border-radius: 10px; border-left: 3px solid var(--accent-red);">
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        <strong style="color: var(--accent-red);">⚠️ 风险提示：</strong>谈判破裂风险、政策反复风险、估值过高风险（SNDK年内+3400%）。黄仁勋缺席代表团是高端AI芯片出口管制难放松的信号。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 市场要点 -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <h3 class="card-title">市场核心要点</h3>
+                    <div class="card-icon icon-market">🎯</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="marketChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>数据来源：Wall Street Journal, CNBC, MarketBeat, Investing.com | 生成时间：2026年5月12日</p>
+            <p style="margin-top: 10px; opacity: 0.6;">本报告仅供参考，不构成投资建议</p>
+        </footer>
+    </div>
+
+    <script>
+        // 涨跌幅分布图
+        const changeCtx = document.getElementById('changeChart').getContext('2d');
+        new Chart(changeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['AAPL', 'MSFT', 'GOOGL', 'QCOM', 'BA', 'AMD', 'AGQ', 'TSLA', 'NVDA', 'DRAM', 'SNDK', 'MU'],
+                datasets: [{
+                    label: '日涨跌幅 (%)',
+                    data: [0.62, -1.09, -0.36, -11.46, -0.56, -2.29, 1.24, -2.60, 0.61, -6.86, -6.17, -3.72],
+                    backgroundColor: [
+                        'rgba(0, 208, 132, 0.7)', 'rgba(255, 71, 87, 0.7)', 'rgba(255, 71, 87, 0.7)',
+                        'rgba(255, 71, 87, 0.9)', 'rgba(255, 71, 87, 0.7)', 'rgba(255, 71, 87, 0.7)',
+                        'rgba(0, 208, 132, 0.7)', 'rgba(255, 71, 87, 0.7)', 'rgba(0, 208, 132, 0.7)',
+                        'rgba(255, 71, 87, 0.8)', 'rgba(255, 71, 87, 0.8)', 'rgba(255, 71, 87, 0.7)'
+                    ],
+                    borderColor: [
+                        '#00d084', '#ff4757', '#ff4757', '#ff4757', '#ff4757', '#ff4757',
+                        '#00d084', '#ff4757', '#00d084', '#ff4757', '#ff4757', '#ff4757'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8a8a9a' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8a8a9a', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // 市场走势对比图
+        const marketCtx = document.getElementById('marketChart').getContext('2d');
+        new Chart(marketCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月'],
+                datasets: [
+                    {
+                        label: '标普500',
+                        data: [5800, 6100, 6343, 7200, 7400],
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: '纳斯达克',
+                        data: [18000, 19500, 21000, 25000, 26088],
+                        borderColor: '#00d084',
+                        backgroundColor: 'rgba(0, 208, 132, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#f0f0f5' }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8a8a9a' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8a8a9a' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
