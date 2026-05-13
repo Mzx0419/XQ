@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>赠送优惠券 - 优化版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #f5f6f7;
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    /* 顶部导航栏 */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-back {
+      font-size: 24px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .navbar-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .navbar-more {
+      font-size: 20px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .navbar-icon {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #000;
+      border-radius: 50%;
+    }
+
+    /* 客户信息卡片 */
+    .customer-card {
+      background-color: #ffffff;
+      padding: 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .customer-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .customer-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .customer-detail {
+      flex: 1;
+    }
+
+    .customer-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 4px;
+    }
+
+    .customer-tags {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .tag-member {
+      background-color: #87cefa;
+      color: white;
+    }
+
+    .tag-level {
+      background-color: #ffd700;
+      color: #333;
+    }
+
+    .tag-preference {
+      background-color: #ffb6c1;
+      color: #333;
+    }
+
+    /* 智能推荐 */
+    .recommend-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 16px;
+      margin: 12px;
+      border-radius: 12px;
+      color: white;
+    }
+
+    .recommend-title {
+      font-size: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .recommend-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .recommend-item {
+      flex-shrink: 0;
+      background-color: rgba(255,255,255,0.2);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    /* 标签页 */
+    .tabs {
+      display: flex;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .tab-item {
+      flex: 1;
+      text-align: center;
+      padding: 14px 0;
+      font-size: 15px;
+      color: #333;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab-item.active {
+      color: #6fb3ff;
+      font-weight: 500;
+    }
+
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background-color: #6fb3ff;
+      border-radius: 2px;
+    }
+
+    /* 筛选栏 */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      overflow-x: auto;
+    }
+
+    .filter-btn {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: 16px;
+      border: 1px solid #e5e5e5;
+      background-color: #fff;
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background-color: #6fb3ff;
+      color: white;
+      border-color: #6fb3ff;
+    }
+
+    /* 优惠券列表 */
+    .coupon-list {
+      background-color: #ffffff;
+      padding: 12px;
+    }
+
+    .coupon-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .coupon-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: #6fb3ff;
+    }
+
+    .coupon-item.high-value::before {
+      background-color: #ff6b6b;
+    }
+
+    .coupon-item.new-customer::before {
+      background-color: #51cf66;
+    }
+
+    .coupon-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #e5e5e5;
+      border-radius: 50%;
+      margin-right: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .coupon-checkbox.checked {
+      background-color: #6fb3ff;
+      border-color: #6fb3ff;
+      color: white;
+      font-size: 14px;
+    }
+
+    .coupon-info {
+      flex: 1;
+    }
+
+    .coupon-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .coupon-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .coupon-amount {
+      font-size: 13px;
+      color: #6fb3ff;
+      font-weight: 500;
+    }
+
+    .coupon-desc {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .coupon-rules {
+      background-color: #f9f9f9;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .coupon-rules strong {
+      color: #666;
+    }
+
+    .coupon-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .coupon-history {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .coupon-send-btn {
+      padding: 6px 16px;
+      border-radius: 16px;
+      border: 1px solid #6fb3ff;
+      background-color: #fff;
+      font-size: 13px;
+      color: #6fb3ff;
+      cursor: pointer;
+    }
+
+    .coupon-send-btn.sent {
+      background-color: #e5e5e5;
+      border-color: #e5e5e5;
+      color: #999;
+    }
+
+    /* 底部统计栏 */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      background-color: #ffffff;
+      border-top: 1px solid #e5e5e5;
+      padding: 12px 16px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .bottom-info {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .bottom-info strong {
+      color: #6fb3ff;
+      font-size: 16px;
+    }
+
+    .bottom-btn {
+      padding: 10px 32px;
+      border-radius: 20px;
+      border: none;
+      background-color: #6fb3ff;
+      color: white;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .bottom-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 16px;
+    }
+
+    .empty-text {
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .empty-subtext {
+      font-size: 13px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <button class="navbar-back" onclick="window.history.back()">‹</button>
+    <h1 class="navbar-title">赠送优惠券</h1>
+    <div class="navbar-right">
+      <button class="navbar-more">⋯</button>
+      <div class="navbar-icon"></div>
+    </div>
+  </nav>
+
+  <!-- 客户信息卡片 -->
+  <div class="customer-card">
+    <div class="customer-info">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23fff5d0'/%3E%3Ccircle cx='50' cy='50' r='40' fill='%23ffd76e'/%3E%3Cg transform='translate(25,25) scale(0.5)'%3E%3Cpath d='M30 10 Q50 0 70 10 L70 60 Q70 80 50 80 Q30 80 30 60 Z' fill='%23fff'/%3E%3Ccircle cx='40' cy='35' r='5' fill='%23000'/%3E%3Ccircle cx='60' cy='35' r='5' fill='%23000'/%3E%3Cpath d='M45 50 Q50 55 55 50' stroke='%23ff69b4' stroke-width='2' fill='none'/%3E%3Cpath d='M70 20 L80 10 L85 20' fill='%23ff69b4'/%3E%3C/g%3E%3C/svg%3E" alt="头像" class="customer-avatar">
+      <div class="customer-detail">
+        <div class="customer-name">希希大人</div>
+        <div class="customer-tags">
+          <span class="tag tag-member">会员</span>
+          <span class="tag tag-level">D 级</span>
+          <span class="tag tag-preference">抗衰</span>
+          <span class="tag tag-preference">补水</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 智能推荐 -->
+  <div class="recommend-section">
+    <div class="recommend-title">
+      <span>💡</span>
+      <span>智能推荐</span>
+    </div>
+    <div class="recommend-list">
+      <div class="recommend-item">满 200 减 10</div>
+      <div class="recommend-item">闺蜜卡一张</div>
+      <div class="recommend-item">20 元无门槛</div>
+    </div>
+  </div>
+
+  <!-- 标签页 -->
+  <div class="tabs">
+    <div class="tab-item active" onclick="switchTab('all', this)">全部</div>
+    <div class="tab-item" onclick="switchTab('amount', this)">满减券</div>
+    <div class="tab-item" onclick="switchTab('discount', this)">折扣券</div>
+    <div class="tab-item" onclick="switchTab('experience', this)">体验券</div>
+    <div class="tab-item" onclick="switchTab('course', this)">疗程券</div>
+  </div>
+
+  <!-- 筛选栏 -->
+  <div class="filter-bar">
+    <button class="filter-btn active">全部面额</button>
+    <button class="filter-btn">10-50 元</button>
+    <button class="filter-btn">50-100 元</button>
+    <button class="filter-btn">100 元以上</button>
+    <button class="filter-btn">未使用</button>
+  </div>
+
+  <!-- 优惠券列表 -->
+  <div class="coupon-list">
+    <!-- 优惠券 1 - 高价值 -->
+    <div class="coupon-item high-value">
+      <div class="coupon-checkbox" onclick="toggleCoupon(this)"></div>
+      <div class="coupon-info">
+        <div class="coupon-header">
+          <span class="coupon-name">闺蜜卡一张</span>
+          <span class="coupon-amount">2000 元定额</span>
+        </div>
+        <p class="coupon-desc">订单金额满 500 元可用，指定商品可用（光子嫩肤）</p>
+        <div class="coupon-rules">
+          <strong>使用规则：</strong>领取 0 天后 60 天有效 · 指定项目可用
+        </div>
+        <div class="coupon-footer">
+          <span class="coupon-history">该客户未收到过</span>
+          <button class="coupon-send-btn">赠送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 优惠券 2 - 新客券 -->
+    <div class="coupon-item new-customer">
+      <div class="coupon-checkbox" onclick="toggleCoupon(this)"></div>
+      <div class="coupon-info">
+        <div class="coupon-header">
+          <span class="coupon-name">20 元无门槛券</span>
+          <span class="coupon-amount">20 元定额</span>
+        </div>
+        <p class="coupon-desc">商城购物：全部商品可用，全部项目可用，全部卖品可用</p>
+        <div class="coupon-rules">
+          <strong>使用规则：</strong>领取 0 天后 30 天有效 · 无使用门槛
+        </div>
+        <div class="coupon-footer">
+          <span class="coupon-history">该客户未收到过</span>
+          <button class="coupon-send-btn">赠送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 优惠券 3 -->
+    <div class="coupon-item">
+      <div class="coupon-checkbox" onclick="toggleCoupon(this)"></div>
+      <div class="coupon-info">
+        <div class="coupon-header">
+          <span class="coupon-name">100 元红包</span>
+          <span class="coupon-amount">100 元定额</span>
+        </div>
+        <p class="coupon-desc">商城购物：消费金额满 1000 元可用，全部项目可用</p>
+        <div class="coupon-rules">
+          <strong>使用规则：</strong>领取 1 天后 100 天有效 · 满 1000 元可用
+        </div>
+        <div class="coupon-footer">
+          <span class="coupon-history">已发送 3 次 · 核销 2 次</span>
+          <button class="coupon-send-btn sent">已发送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 优惠券 4 -->
+    <div class="coupon-item">
+      <div class="coupon-checkbox" onclick="toggleCoupon(this)"></div>
+      <div class="coupon-info">
+        <div class="coupon-header">
+          <span class="coupon-name">满 200 减 10</span>
+          <span class="coupon-amount">10 元定额</span>
+        </div>
+        <p class="coupon-desc">商城购物：消费金额满 200 元可用，指定项目可用（淋巴、滤镜肌）</p>
+        <div class="coupon-rules">
+          <strong>使用规则：</strong>领取 0 天后 30 天有效 · 满 200 元可用
+        </div>
+        <div class="coupon-footer">
+          <span class="coupon-history">已发送 5 次 · 核销 4 次</span>
+          <button class="coupon-send-btn">赠送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 优惠券 5 -->
+    <div class="coupon-item">
+      <div class="coupon-checkbox" onclick="toggleCoupon(this)"></div>
+      <div class="coupon-info">
+        <div class="coupon-header">
+          <span class="coupon-name">11-11 消费节</span>
+          <span class="coupon-amount">11-1111 元随机</span>
+        </div>
+        <p class="coupon-desc">商城购物：消费金额满 111 元可用，全部项目可用</p>
+        <div class="coupon-rules">
+          <strong>使用规则：</strong>2025-01-01~2025-12-30 有效 · 满 111 元可用
+        </div>
+        <div class="coupon-footer">
+          <span class="coupon-history">该客户未收到过</span>
+          <button class="coupon-send-btn">赠送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 优惠券 6 -->
+    <div class="coupon-item">
+      <div class="coupon-checkbox" onclick="toggleCoupon(this)"></div>
+      <div class="coupon-info">
+        <div class="coupon-header">
+          <span class="coupon-name">中秋优惠券</span>
+          <span class="coupon-amount">500 元定额</span>
+        </div>
+        <p class="coupon-desc">商城购物：全部商品可用，全部项目可用，全部套餐可用</p>
+        <div class="coupon-rules">
+          <strong>使用规则：</strong>领取 0 天后 365 天有效 · 无使用门槛
+        </div>
+        <div class="coupon-footer">
+          <span class="coupon-history">已发送 1 次 · 核销 1 次</span>
+          <button class="coupon-send-btn">赠送</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部统计栏 -->
+  <div class="bottom-bar">
+    <div class="bottom-info">
+      已选择 <strong id="selectedCount">0</strong> 张优惠券
+    </div>
+    <button class="bottom-btn" id="confirmBtn" disabled onclick="confirmSend()">确定赠送</button>
+  </div>
+</body>
+</html>
+
+<script>
+  // 切换标签页
+  function switchTab(tab, element) {
+    document.querySelectorAll('.tab-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    element.classList.add('active');
+  }
+
+  // 切换优惠券选择
+  function toggleCoupon(checkbox) {
+    checkbox.classList.toggle('checked');
+    if (checkbox.classList.contains('checked')) {
+      checkbox.innerHTML = '✓';
+    } else {
+      checkbox.innerHTML = '';
+    }
+    updateSelectedCount();
+  }
+
+  // 更新已选择数量
+  function updateSelectedCount() {
+    const count = document.querySelectorAll('.coupon-checkbox.checked').length;
+    document.getElementById('selectedCount').textContent = count;
+    document.getElementById('confirmBtn').disabled = count === 0;
+  }
+
+  // 确认赠送
+  function confirmSend() {
+    const count = document.querySelectorAll('.coupon-checkbox.checked').length;
+    if (count > 0) {
+      alert(`确定赠送 ${count} 张优惠券给客户？`);
+    }
+  }
+</script>

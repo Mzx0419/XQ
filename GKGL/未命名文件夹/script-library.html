@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>话术库</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #f5f6f7;
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000;
+      flex: 1;
+      text-align: center;
+    }
+
+    .navbar-close {
+      font-size: 28px;
+      color: #999;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 30px;
+    }
+
+    /* 主体布局 */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* 左侧分组 */
+    .sidebar {
+      width: 100px;
+      background-color: #f5f6f7;
+      border-right: 1px solid #e5e5e5;
+      overflow-y: auto;
+    }
+
+    .sidebar-item {
+      padding: 16px 12px;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .sidebar-item:hover {
+      background-color: #e8e8e8;
+    }
+
+    .sidebar-item.active {
+      background-color: #ffffff;
+      color: #6fb3ff;
+      font-weight: 500;
+      border-left: 3px solid #6fb3ff;
+      padding-left: 9px;
+    }
+
+    /* 右侧内容 */
+    .content {
+      flex: 1;
+      background-color: #ffffff;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    /* 话术卡片 */
+    .script-card {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .script-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 12px;
+    }
+
+    .script-content {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .script-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .script-btn {
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .script-btn.edit {
+      background-color: #fff;
+      border: 1px solid #e5e5e5;
+      color: #333;
+    }
+
+    .script-btn.send {
+      background-color: #6fb3ff;
+      border: none;
+      color: white;
+    }
+
+    /* 隐藏类 */
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <div style="width: 30px;"></div>
+    <h1 class="navbar-title">话术库</h1>
+    <button class="navbar-close" onclick="window.history.back()">×</button>
+  </nav>
+
+  <!-- 主体布局 -->
+  <div class="main-container">
+    <!-- 左侧分组 -->
+    <div class="sidebar">
+      <div class="sidebar-item active" onclick="switchTab('all', this)">全部分组</div>
+      <div class="sidebar-item" onclick="switchTab('beauty', this)">基础美容</div>
+      <div class="sidebar-item" onclick="switchTab('sales', this)">销售话术</div>
+    </div>
+
+    <!-- 右侧内容 -->
+    <div class="content">
+      <!-- 销售话术 1 -->
+      <div class="script-card sales">
+        <h3 class="script-title">你们这产品真能有效果吗？</h3>
+        <p class="script-content">
+          您问这个问题太正常啦，谁都想把钱花在刀刃上。我们这产品和项目好多顾客都试过，效果有目共睹，我这有不少真实例子和客户反馈给您看看。不过每个人皮肤情况和体质不同，效果会有点差别。但我们皮肤管理...
+        </p>
+        <div class="script-actions">
+          <button class="script-btn edit">编辑</button>
+          <button class="script-btn send">发送</button>
+        </div>
+      </div>
+
+      <!-- 销售话术 2 -->
+      <div class="script-card sales">
+        <h3 class="script-title">你们这项目怎么这么贵呢？</h3>
+        <p class="script-content">
+          "我理解您对价格很关注。这价格涵盖了好多方面，产品都是高质量、安全有效的，成本就不低。而且我们皮肤管理师都经过严格专业培训，技术过硬，能给您提供优质服务。另外，完善的售后和跟踪服务也包含在内...
+        </p>
+        <div class="script-actions">
+          <button class="script-btn edit">编辑</button>
+          <button class="script-btn send">发送</button>
+        </div>
+      </div>
+
+      <!-- 销售话术 3 -->
+      <div class="script-card sales">
+        <h3 class="script-title">我回家再考虑考虑</h3>
+        <p class="script-content">
+          行呀，可以可以是应该的。不过得跟您说一声，我们这优惠活动是限时的，错过可就可惜了。您脸上的问题早点解决，就能早点变美啦。要不我再给您详细介绍介绍，帮您打消一些顾虑？
+        </p>
+        <div class="script-actions">
+          <button class="script-btn edit">编辑</button>
+          <button class="script-btn send">发送</button>
+        </div>
+      </div>
+
+      <!-- 基础美容 1 -->
+      <div class="script-card beauty hidden">
+        <h3 class="script-title">为什么我的脸容易过敏？</h3>
+        <p class="script-content">
+          敏敏皮是因为屏障受损导致的，导致屏障受损的的原因分为三大类，如下：①过度清洁、护肤品使用的不正确、频繁敷面膜②在院内频繁做护理、护理的项目不适合、不做修护③先天性的敏感皮。
+        </p>
+        <div class="script-actions">
+          <button class="script-btn edit">编辑</button>
+          <button class="script-btn send">发送</button>
+        </div>
+      </div>
+
+      <!-- 基础美容 2 -->
+      <div class="script-card beauty hidden">
+        <h3 class="script-title">皮肤为什么会红、热、痒？？</h3>
+        <p class="script-content">
+          皮肤屏障就像墙外面刷的那层漆一样，墙壁里面有非常多的报警器 (也就是神经末梢) 被外面的那层漆保护着，一旦屏障受损以后，报警器就会因为缺乏保护而裸露在外面，一旦外界的温度升高、异物进入皮肤时，就会...
+        </p>
+        <div class="script-actions">
+          <button class="script-btn edit">编辑</button>
+          <button class="script-btn send">发送</button>
+        </div>
+      </div>
+
+      <!-- 基础美容 3 -->
+      <div class="script-card beauty hidden">
+        <h3 class="script-title">如何修护皮肤屏障呢？</h3>
+        <p class="script-content">
+          亲爱的，当皮肤屏障受损以后皮肤很容易出现炎症反应，想要修护皮肤屏障，需要做好三步：①减轻皮肤盐症反应；②给皮肤
+        </p>
+        <div class="script-actions">
+          <button class="script-btn edit">编辑</button>
+          <button class="script-btn send">发送</button>
+        </div>
+      </div>
+
+      <!-- 基础美容 4 -->
+      <div class="script-card beauty hidden">
+        <h3 class="script-title">脸上的红血丝是怎么回事？</h3>
+        <p class="script-content">
+          脸上出现的红血丝有很多原因，比如个人太...
+        </p>
+        <div class="script-actions">
+          <button class="script-btn edit">编辑</button>
+          <button class="script-btn send">发送</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab, element) {
+      // 移除所有 active 类
+      document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // 添加 active 类到当前点击的元素
+      element.classList.add('active');
+
+      // 根据标签切换内容
+      const allCards = document.querySelectorAll('.script-card');
+      const salesCards = document.querySelectorAll('.script-card.sales');
+      const beautyCards = document.querySelectorAll('.script-card.beauty');
+
+      if (tab === 'all') {
+        allCards.forEach(card => card.classList.remove('hidden'));
+      } else if (tab === 'sales') {
+        allCards.forEach(card => card.classList.add('hidden'));
+        salesCards.forEach(card => card.classList.remove('hidden'));
+      } else if (tab === 'beauty') {
+        allCards.forEach(card => card.classList.add('hidden'));
+        beautyCards.forEach(card => card.classList.remove('hidden'));
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>提交成功 - 验证码核销</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .phone-container {
+      width: 375px;
+      min-height: 812px;
+      background-color: #ffffff;
+      border-radius: 0px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Status Bar - Minimal */
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .status-bar .icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 16px;
+    }
+
+    /* Header - Clean */
+    .header {
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .header h1 {
+      font-size: 17px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    /* Content - Clean Layout */
+    .content {
+      padding: 32px 24px 40px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .phone-number {
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+
+    .phone-number span {
+      color: #666;
+    }
+
+    /* Verification Code Input - Minimalist */
+    .verification-input {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .verification-input input {
+      width: 64px;
+      height: 52px;
+      border: none;
+      border-radius: 8px;
+      background-color: #f5f5f5;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+      color: #1a1a1a;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .verification-input input:focus {
+      background-color: #eeeeee;
+    }
+
+    .verification-input input.filled {
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Helper Links */
+    .helper-links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+
+    .helper-links a {
+      font-size: 14px;
+      color: #5b8fff;
+      text-decoration: none;
+      font-weight: 400;
+    }
+
+    .helper-links a:hover {
+      opacity: 0.8;
+    }
+
+    .resend-btn {
+      background: none;
+      border: none;
+      color: #5b8fff;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 400;
+    }
+
+    .resend-btn:disabled {
+      color: #ccc;
+      cursor: default;
+    }
+
+    /* Submit Button - Modern Blue */
+    .submit-btn {
+      display: block;
+      width: 100%;
+      background-color: #5b8fff;
+      border: none;
+      color: white;
+      padding: 14px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .submit-btn:hover {
+      background-color: #4a7fef;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    .submit-btn:disabled {
+      background-color: #e0e0e0;
+      cursor: not-allowed;
+    }
+
+    /* Toast Notification - Minimal */
+    .toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Success Overlay - Clean */
+    .success-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .success-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .success-overlay .checkmark {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #5b8fff 0%, #4a7fef 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .success-overlay .checkmark::after {
+      content: '✓';
+      font-size: 40px;
+      color: white;
+      font-weight: 300;
+    }
+
+    .success-overlay h2 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .success-overlay p {
+      font-size: 14px;
+      color: #999;
+    }
+
+    /* Bottom Home Indicator */
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      background-color: #1a1a1a;
+      border-radius: 3px;
+      opacity: 0.3;
+    }
+
+    /* Help Modal - Popup Style */
+    .help-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .help-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .help-modal-content-box {
+      background-color: #ffffff;
+      border-radius: 12px;
+      width: 327px;
+      margin: 0 24px;
+      overflow: hidden;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+
+    .help-modal.show .help-modal-content-box {
+      transform: scale(1);
+    }
+
+    .help-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .help-modal-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .help-modal-close {
+      font-size: 24px;
+      color: #999;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .help-modal-close:hover {
+      color: #1a1a1a;
+    }
+
+    .help-modal-body {
+      padding: 20px;
+    }
+
+    .help-item {
+      margin-bottom: 20px;
+    }
+
+    .help-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .help-item-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+
+    .help-item-text {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .help-item-text strong {
+      color: #1a1a1a;
+      font-weight: 500;
+    }
+
+    .help-contact-btn {
+      display: block;
+      width: 100%;
+      background-color: #5b8fff;
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .help-contact-btn:hover {
+      background-color: #4a7fef;
+    }
+
+    /* QR Code Section */
+    .qr-code-section {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px dashed #e5e5e5;
+    }
+
+    .qr-code-title {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .qr-code-image {
+      width: 120px;
+      height: 120px;
+      background-color: #f5f5f5;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .qr-code-image img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+    }
+
+    .qr-code-tip {
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="time" id="currentTime">9:41</span>
+      <div class="icons">
+        <span>📶</span>
+        <span>📡</span>
+        <span>🔋</span>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <h1>提交成功</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <h2 class="title">请顾客出示验证码</h2>
+      <p class="phone-number">验证码已发送到：<span>135****6208</span></p>
+
+      <!-- Verification Code Input -->
+      <div class="verification-input">
+        <input type="tel" maxlength="1" data-index="0" placeholder="">
+        <input type="tel" maxlength="1" data-index="1" placeholder="">
+        <input type="tel" maxlength="1" data-index="2" placeholder="">
+        <input type="tel" maxlength="1" data-index="3" placeholder="">
+      </div>
+
+      <!-- Helper Links -->
+      <div class="helper-links">
+        <a href="#" onclick="openHelpModal(); return false;">收不到验证码？</a>
+        <button class="resend-btn" id="resendBtn" onclick="resendCode()">60 秒后重新获取</button>
+      </div>
+
+      <!-- Submit Button -->
+      <button class="submit-btn" id="submitBtn" onclick="submitCode()" disabled>确认结算</button>
+    </div>
+
+    <!-- Bottom Home Indicator -->
+    <div class="home-indicator"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="checkmark"></div>
+      <h2>结算成功</h2>
+      <p>感谢您的光临</p>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="help-modal" id="helpModal" onclick="closeHelpModalOnOverlay(event)">
+      <div class="help-modal-content-box">
+        <div class="help-modal-header">
+          <h1 class="help-modal-title">收不到验证码？</h1>
+          <button class="help-modal-close" onclick="closeHelpModal()">×</button>
+        </div>
+        <div class="help-modal-body">
+          <div class="help-item">
+            <p class="help-item-title">1. 检查信号状态</p>
+            <p class="help-item-text">请确认您的手机信号良好，如果在地下室或电梯等信号弱的地方，请移动到开阔地带。</p>
+          </div>
+          <div class="help-item">
+            <p class="help-item-title">2. 检查短信拦截</p>
+            <p class="help-item-text">查看手机是否安装了短信拦截软件，验证码短信可能被误判为垃圾短信。</p>
+          </div>
+          <div class="help-item">
+            <p class="help-item-title">3. 检查手机号码</p>
+            <p class="help-item-text">确认您输入的手机号码是否正确，验证码已发送到 <strong>135****6208</strong></p>
+          </div>
+          <div class="help-item">
+            <p class="help-item-title">4. 稍后再试</p>
+            <p class="help-item-text">运营商短信通道可能延迟，请等待 1-2 分钟后点击"重新发送"尝试。</p>
+          </div>
+
+          <!-- QR Code Section -->
+          <div class="qr-code-section">
+            <div class="qr-code-image">
+              <!-- 这里可以替换成实际的二维码图片 -->
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23000' x='10' y='10' width='30' height='30'/%3E%3Crect fill='%23000' x='60' y='10' width='30' height='30'/%3E%3Crect fill='%23000' x='10' y='60' width='30' height='30'/%3E%3Crect fill='%23000' x='50' y='50' width='10' height='10'/%3E%3Crect fill='%23000' x='70' y='70' width='10' height='10'/%3E%3C/svg%3E" alt="客服二维码">
+            </div>
+            <p class="qr-code-tip">扫码联系客服获取帮助</p>
+          </div>
+
+          <button class="help-contact-btn" onclick="contactSupport()">联系客服</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update current time
+    function updateTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      document.getElementById('currentTime').textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
+    }
+    updateTime();
+
+    // Verification code input handling
+    const inputs = document.querySelectorAll('.verification-input input');
+    const submitBtn = document.getElementById('submitBtn');
+
+    inputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const value = e.target.value;
+
+        // Only allow numbers
+        if (!/^\d*$/.test(value)) {
+          e.target.value = '';
+          return;
+        }
+
+        if (value.length === 1) {
+          e.target.classList.add('filled');
+          // Move to next input
+          if (index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        }
+
+        checkAllFilled();
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && e.target.value === '') {
+          e.target.classList.remove('filled');
+          // Move to previous input
+          if (index > 0) {
+            inputs[index - 1].focus();
+            inputs[index - 1].value = '';
+            inputs[index - 1].classList.remove('filled');
+          }
+        }
+        checkAllFilled();
+      });
+
+      input.addEventListener('focus', () => {
+        input.select();
+      });
+    });
+
+    function checkAllFilled() {
+      const allFilled = Array.from(inputs).every(input => input.value.length === 1);
+      submitBtn.disabled = !allFilled;
+    }
+
+    // Resend code
+    let countdown = 60;
+    function resendCode() {
+      const btn = document.getElementById('resendBtn');
+      btn.disabled = true;
+
+      const timer = setInterval(() => {
+        countdown--;
+        btn.textContent = `${countdown}s 后重发`;
+
+        if (countdown <= 0) {
+          clearInterval(timer);
+          btn.disabled = false;
+          btn.textContent = '重新发送';
+          countdown = 60;
+          showToast('验证码已重新发送');
+        }
+      }, 1000);
+
+      showToast('验证码已重新发送');
+    }
+
+    // Fill test code
+    function fillTestCode() {
+      const testCode = '1234';
+      inputs.forEach((input, index) => {
+        input.value = testCode[index];
+        input.classList.add('filled');
+      });
+      submitBtn.disabled = false;
+      showToast('测试验证码已填充');
+    }
+
+    // Submit code
+    function submitCode() {
+      const code = Array.from(inputs).map(input => input.value).join('');
+
+      if (code.length !== 4) {
+        showToast('请输入完整的验证码');
+        return;
+      }
+
+      // Simulate API call
+      submitBtn.disabled = true;
+      submitBtn.textContent = '核销中...';
+
+      setTimeout(() => {
+        document.getElementById('successOverlay').classList.add('show');
+
+        setTimeout(() => {
+          // Reset for demo
+          document.getElementById('successOverlay').classList.remove('show');
+          submitBtn.disabled = false;
+          submitBtn.textContent = '确认核销';
+          inputs.forEach(input => {
+            input.value = '';
+            input.classList.remove('filled');
+          });
+          inputs[0].focus();
+        }, 2000);
+      }, 1000);
+    }
+
+    // Show toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // Help Modal functions
+    function openHelpModal() {
+      document.getElementById('helpModal').classList.add('show');
+    }
+
+    function closeHelpModal() {
+      document.getElementById('helpModal').classList.remove('show');
+    }
+
+    function closeHelpModalOnOverlay(event) {
+      if (event.target === document.getElementById('helpModal')) {
+        closeHelpModal();
+      }
+    }
+
+    function contactSupport() {
+      showToast('正在联系客服...');
+      // 这里可以添加实际联系客服的逻辑
+      setTimeout(() => {
+        closeHelpModal();
+        showToast('客服热线：400-xxx-xxxx');
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

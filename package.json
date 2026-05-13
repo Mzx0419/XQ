@@ -1,0 +1,11 @@
+{
+  "name": "stock-report",
+  "version": "1.0.0",
+  "description": "美股行情可视化报告",
+  "scripts": {
+    "dev": "python3 -m http.server 8080",
+    "build": "mkdir -p dist && cp stock-report.html dist/index.html",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {}
+}

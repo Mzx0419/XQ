@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>徽章获取统计详情</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f6fa; min-height: 100vh; padding-bottom: 24px; max-width: 430px; margin: 0 auto; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); position: sticky; top: 0; z-index: 100; }
+    .header-btn { width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,0.2); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+    .header-title { font-size: 17px; font-weight: 600; color: #fff; }
+    .header-right { display: flex; gap: 8px; }
+    .time-filter { display: flex; justify-content: space-around; background: #fff; padding: 12px 16px; border-bottom: 1px solid #e8e8e8; }
+    .time-btn { padding: 6px 16px; font-size: 13px; color: #666; background: transparent; border: none; border-radius: 16px; cursor: pointer; }
+    .time-btn.active { color: #667eea; background: #f0f2ff; font-weight: 500; }
+    .main { padding: 12px; }
+    .chart-section { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+    .chart-header { display: flex; align-items: center; margin-bottom: 16px; }
+    .title-bar { width: 3px; height: 16px; background: #667eea; border-radius: 2px; margin-right: 6px; }
+    .section-title { font-size: 15px; font-weight: 600; color: #333; }
+
+    /* 徽章筛选 */
+    .badge-filter { display: flex; gap: 8px; margin-bottom: 12px; }
+    .filter-btn { padding: 6px 12px; font-size: 12px; color: #666; background: #f0f0f0; border: none; border-radius: 16px; cursor: pointer; }
+    .filter-btn.active { color: #fff; background: #667eea; font-weight: 500; }
+
+    /* 等级筛选 */
+    .level-filter { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+    .level-btn { padding: 6px 12px; font-size: 12px; color: #666; background: #f0f0f0; border: none; border-radius: 16px; cursor: pointer; }
+    .level-btn.active { color: #fff; background: #667eea; font-weight: 500; }
+
+    /* 徽章分布概览：先数据概览，再饼图+图例 */
+    .overview-content { display: flex; flex-direction: column; gap: 16px; }
+    .overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .overview-card {
+      background: #f8f9ff; border-radius: 10px; padding: 12px 10px;
+      border: 1px solid #e8eaff; text-align: center; min-height: 64px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+    }
+    .overview-label { font-size: 12px; color: #666; margin-bottom: 6px; line-height: 1.2; }
+    .overview-value-row { display: flex; align-items: baseline; justify-content: center; gap: 2px; flex-wrap: nowrap; }
+    .overview-value { font-size: 20px; font-weight: 700; color: #333; letter-spacing: -0.02em; }
+    .overview-unit { font-size: 12px; color: #999; }
+    .overview-chart-row { display: flex; gap: 16px; align-items: center; }
+    .pie-wrap { width: 120px; height: 120px; flex-shrink: 0; }
+    .pie-chart { width: 100%; height: 100%; display: block; }
+    .data-wrap { flex: 1; min-width: 0; }
+    .legend-list { display: flex; flex-direction: column; gap: 6px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; }
+    .legend-name { color: #333; min-width: 55px; }
+    .legend-pct { color: #999; min-width: 30px; }
+    .legend-val { color: #667eea; font-weight: 500; }
+
+    /* V等级分布 */
+    .level-card { background: #f8f9fa; border-radius: 10px; padding: 12px; border: 1px solid #e8e8e8; }
+    .level-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .level-card-name { font-size: 12px; font-weight: 500; color: #667eea; }
+    .level-card-total { font-size: 11px; color: #999; }
+    .level-bars { display: flex; flex-direction: column; gap: 6px; }
+    .level-row { display: flex; align-items: center; gap: 8px; }
+    .level-dot { width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; color: #fff; flex-shrink: 0; }
+    .level-bar-wrap { flex: 1; }
+    .level-bar-top { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .level-bar-label { font-size: 11px; color: #333; }
+    .level-bar-val { font-size: 11px; color: #999; }
+    .level-bar-bg { height: 6px; background: #e8e8e8; border-radius: 3px; overflow: hidden; }
+    .level-bar-fill { height: 100%; border-radius: 3px; }
+
+    /* 升级周期列表 */
+    .cycle-list { display: flex; flex-direction: column; gap: 10px; }
+    .cycle-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 10px; }
+    .cycle-icon { width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .cycle-info { flex: 1; }
+    .cycle-name { font-size: 13px; font-weight: 500; color: #333; }
+    .cycle-desc { font-size: 11px; color: #999; margin-top: 2px; }
+    .cycle-days { text-align: right; }
+    .cycle-days-num { display: flex; align-items: flex-end; justify-content: flex-end; gap: 2px; }
+    .cycle-days-val { font-size: 20px; font-weight: 700; color: #667eea; }
+    .cycle-days-unit { font-size: 11px; color: #999; margin-bottom: 2px; }
+    .cycle-change { display: inline-flex; align-items: center; gap: 2px; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-top: 2px; }
+    .cycle-change.down { background: #f6ffed; color: #52c41a; }
+    .cycle-change.up { background: #fff1f0; color: #ff4d4f; }
+
+    /* 任务完成率排行 */
+    .rank-list { display: flex; flex-direction: column; gap: 10px; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 10px; }
+    .rank-number { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+    .rank-number.top1 { background: #fff1f0; color: #ff4d4f; }
+    .rank-number.top2 { background: #fff7e6; color: #fa8c16; }
+    .rank-number.top3 { background: #f6ffed; color: #52c41a; }
+    .rank-number.other { background: #f0f0f0; color: #999; }
+    .rank-info { flex: 1; }
+    .rank-name { font-size: 13px; color: #333; }
+    .rank-desc { font-size: 11px; color: #999; }
+    .rank-value { text-align: right; }
+    .rank-value .val { font-size: 13px; font-weight: 600; color: #667eea; }
+    .rank-value .lbl { font-size: 11px; color: #999; }
+
+    /* 顾客明细表格 */
+    .table-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .view-all { font-size: 12px; color: #667eea; cursor: pointer; }
+    .table-wrap { border: 1px solid #e8e8e8; border-radius: 8px; overflow: hidden; }
+    .table-header { display: flex; background: #f8f9fa; padding: 8px 12px; }
+    .table-row { display: flex; padding: 10px 12px; border-top: 1px solid #e8e8e8; }
+    .table-cell { font-size: 11px; }
+    .table-cell.name { width: 55px; color: #333; }
+    .table-cell.badge { width: 75px; }
+    .table-cell.level { width: 36px; text-align: center; }
+    .table-cell.value { width: 50px; text-align: right; }
+    .table-cell.date { flex: 1; text-align: right; color: #999; }
+    .level-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 500; }
+    .level-badge.gold { background: #fff7e6; color: #daa520; }
+    .level-badge.silver { background: #e8e8e8; color: #666; }
+    .level-badge.bronze { background: #fff1f0; color: #cd7f32; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="customer-growth-analysis.html" class="header-btn" aria-label="返回">←</a>
+    <h1 class="header-title">徽章获取统计详情</h1>
+    <div class="header-right">
+      <button type="button" class="header-btn" aria-label="日历">📅</button>
+      <button type="button" class="header-btn" aria-label="更多">⋯</button>
+    </div>
+  </header>
+
+  <div class="time-filter">
+    <button type="button" class="time-btn active">今日</button>
+    <button type="button" class="time-btn">本周</button>
+    <button type="button" class="time-btn">本月</button>
+    <button type="button" class="time-btn">自定义</button>
+  </div>
+
+  <main class="main">
+    <!-- 徽章分布概览 -->
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">徽章分布概览</span></div>
+      <div class="overview-content">
+        <div class="overview-grid">
+          <div class="overview-card">
+            <div class="overview-label">徽章总数</div>
+            <div class="overview-value-row"><span class="overview-value">12,580</span><span class="overview-unit">个</span></div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-label">获得人数</div>
+            <div class="overview-value-row"><span class="overview-value">8,256</span><span class="overview-unit">人</span></div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-label">人均徽章</div>
+            <div class="overview-value-row"><span class="overview-value">1.52</span><span class="overview-unit">个</span></div>
+          </div>
+        </div>
+        <div class="overview-chart-row">
+          <div class="pie-wrap">
+            <svg class="pie-chart" viewBox="0 0 130 130">
+              <circle cx="65" cy="65" r="50" fill="none" stroke="#e8e8e8" stroke-width="2"/>
+              <circle cx="65" cy="65" r="40" fill="#fff"/>
+              <path d="M65 15 A50 50 0 0 1 110 50 L65 65 Z" fill="#667eea"/>
+              <path d="M65 65 L110 50 A50 50 0 0 1 105 90 Z" fill="#9b8ce8"/>
+              <path d="M65 65 L105 90 A50 50 0 0 1 65 115 Z" fill="#ff9c6e"/>
+              <path d="M65 65 L65 115 A50 50 0 0 1 25 90 Z" fill="#69c0ff"/>
+              <path d="M65 65 L25 90 A50 50 0 0 1 20 50 Z" fill="#95de64"/>
+              <path d="M65 65 L20 50 A50 50 0 0 1 65 15 Z" fill="#b37feb"/>
+            </svg>
+          </div>
+          <div class="data-wrap">
+            <div class="legend-list">
+            <div class="legend-item"><span class="legend-dot" style="background:#667eea"></span><span class="legend-name">活跃分子</span><span class="legend-pct">20%</span><span class="legend-val">429人</span></div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b8ce8"></span><span class="legend-name">社交达人</span><span class="legend-pct">18%</span><span class="legend-val">307人</span></div>
+            <div class="legend-item"><span class="legend-dot" style="background:#ff9c6e"></span><span class="legend-name">利益链接者</span><span class="legend-pct">25%</span><span class="legend-val">536人</span></div>
+            <div class="legend-item"><span class="legend-dot" style="background:#69c0ff"></span><span class="legend-name">传播大使</span><span class="legend-pct">21%</span><span class="legend-val">311人</span></div>
+            <div class="legend-item"><span class="legend-dot" style="background:#95de64"></span><span class="legend-name">裂变专家</span><span class="legend-pct">16%</span><span class="legend-val">161人</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 各徽章等级分布 -->
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">各徽章等级分布</span></div>
+      <div class="badge-filter">
+        <button type="button" class="filter-btn active">🔥 活跃分子</button>
+        <button type="button" class="filter-btn">💬 社交</button>
+        <button type="button" class="filter-btn">🎁 利益</button>
+        <button type="button" class="filter-btn">📢 传播</button>
+        <button type="button" class="filter-btn">🚀 裂变</button>
+      </div>
+      <div class="level-card">
+        <div class="level-card-head">
+          <span class="level-card-name">🔥 活跃分子</span>
+          <span class="level-card-total">总计 429人</span>
+        </div>
+        <div class="level-bars">
+          <div class="level-row">
+            <div class="level-dot" style="background:#95de64">V1</div>
+            <div class="level-bar-wrap">
+              <div class="level-bar-top"><span class="level-bar-label">V1级</span><span class="level-bar-val">89人 (21%)</span></div>
+              <div class="level-bar-bg"><div class="level-bar-fill" style="width:21%;background:#95de64"></div></div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="level-dot" style="background:#69c0ff">V2</div>
+            <div class="level-bar-wrap">
+              <div class="level-bar-top"><span class="level-bar-label">V2级</span><span class="level-bar-val">67人 (16%)</span></div>
+              <div class="level-bar-bg"><div class="level-bar-fill" style="width:16%;background:#69c0ff"></div></div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="level-dot" style="background:#ffd666;color:#996600">V3</div>
+            <div class="level-bar-wrap">
+              <div class="level-bar-top"><span class="level-bar-label">V3级</span><span class="level-bar-val">58人 (14%)</span></div>
+              <div class="level-bar-bg"><div class="level-bar-fill" style="width:14%;background:#ffd666"></div></div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="level-dot" style="background:#b37feb">V4</div>
+            <div class="level-bar-wrap">
+              <div class="level-bar-top"><span class="level-bar-label">V4级</span><span class="level-bar-val">45人 (10%)</span></div>
+              <div class="level-bar-bg"><div class="level-bar-fill" style="width:10%;background:#b37feb"></div></div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="level-dot" style="background:#ff7875">V5</div>
+            <div class="level-bar-wrap">
+              <div class="level-bar-top"><span class="level-bar-label">V5级</span><span class="level-bar-val">32人 (7%)</span></div>
+              <div class="level-bar-bg"><div class="level-bar-fill" style="width:7%;background:#ff7875"></div></div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="level-dot" style="background:#ff9c6e">V6</div>
+            <div class="level-bar-wrap">
+              <div class="level-bar-top"><span class="level-bar-label">V6级</span><span class="level-bar-val">24人 (6%)</span></div>
+              <div class="level-bar-bg"><div class="level-bar-fill" style="width:6%;background:#ff9c6e"></div></div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="level-dot" style="background:#597ef7">V7</div>
+            <div class="level-bar-wrap">
+              <div class="level-bar-top"><span class="level-bar-label">V7级</span><span class="level-bar-val">18人 (4%)</span></div>
+              <div class="level-bar-bg"><div class="level-bar-fill" style="width:4%;background:#597ef7"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 徽章升级周期 -->
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">徽章升级周期</span></div>
+      <div class="level-filter">
+        <button type="button" class="level-btn active">金章</button>
+        <button type="button" class="level-btn">银章</button>
+        <button type="button" class="level-btn">铜章</button>
+      </div>
+      <div class="cycle-list">
+        <div class="cycle-card">
+          <div class="cycle-icon" style="background:#667eea">🔥</div>
+          <div class="cycle-info">
+            <div class="cycle-name">活跃分子</div>
+            <div class="cycle-desc">铜章→银章→金章</div>
+          </div>
+          <div class="cycle-days">
+            <div class="cycle-days-num"><span class="cycle-days-val">15</span><span class="cycle-days-unit">天</span></div>
+            <div class="cycle-change down">↓ 3天</div>
+          </div>
+        </div>
+        <div class="cycle-card">
+          <div class="cycle-icon" style="background:#9b8ce8">💬</div>
+          <div class="cycle-info">
+            <div class="cycle-name">社交达人</div>
+            <div class="cycle-desc">铜章→银章→金章</div>
+          </div>
+          <div class="cycle-days">
+            <div class="cycle-days-num"><span class="cycle-days-val">22</span><span class="cycle-days-unit">天</span></div>
+            <div class="cycle-change up">↑ 5天</div>
+          </div>
+        </div>
+        <div class="cycle-card">
+          <div class="cycle-icon" style="background:#ff9c6e">🎁</div>
+          <div class="cycle-info">
+            <div class="cycle-name">利益链接者</div>
+            <div class="cycle-desc">铜章→银章→金章</div>
+          </div>
+          <div class="cycle-days">
+            <div class="cycle-days-num"><span class="cycle-days-val">28</span><span class="cycle-days-unit">天</span></div>
+            <div class="cycle-change down">↓ 8天</div>
+          </div>
+        </div>
+        <div class="cycle-card">
+          <div class="cycle-icon" style="background:#69c0ff">📢</div>
+          <div class="cycle-info">
+            <div class="cycle-name">传播大使</div>
+            <div class="cycle-desc">铜章→银章→金章</div>
+          </div>
+          <div class="cycle-days">
+            <div class="cycle-days-num"><span class="cycle-days-val">35</span><span class="cycle-days-unit">天</span></div>
+            <div class="cycle-change down">↓ 2天</div>
+          </div>
+        </div>
+        <div class="cycle-card">
+          <div class="cycle-icon" style="background:#95de64">🚀</div>
+          <div class="cycle-info">
+            <div class="cycle-name">裂变专家</div>
+            <div class="cycle-desc">铜章→银章→金章</div>
+          </div>
+          <div class="cycle-days">
+            <div class="cycle-days-num"><span class="cycle-days-val">45</span><span class="cycle-days-unit">天</span></div>
+            <div class="cycle-change up">↑ 12天</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 徽章任务完成率 -->
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">徽章任务完成率</span></div>
+      <div class="rank-list">
+        <div class="rank-item">
+          <div class="rank-number top1">1</div>
+          <div class="rank-info"><div class="rank-name">每日签到</div><div class="rank-desc">活跃分子</div></div>
+          <div class="rank-value"><div class="val">2,256个</div><div class="lbl">占比 92%</div></div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top2">2</div>
+          <div class="rank-info"><div class="rank-name">写美容笔记</div><div class="rank-desc">社交达人</div></div>
+          <div class="rank-value"><div class="val">1,867个</div><div class="lbl">占比 76%</div></div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number top3">3</div>
+          <div class="rank-info"><div class="rank-name">参与拼团秒杀</div><div class="rank-desc">利益链接者</div></div>
+          <div class="rank-value"><div class="val">1,425个</div><div class="lbl">占比 58%</div></div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">4</div>
+          <div class="rank-info"><div class="rank-name">分享笔记/活动</div><div class="rank-desc">传播大使</div></div>
+          <div class="rank-value"><div class="val">1,198个</div><div class="lbl">占比 49%</div></div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-number other">5</div>
+          <div class="rank-info"><div class="rank-name">分享后成交</div><div class="rank-desc">裂变专家</div></div>
+          <div class="rank-value"><div class="val">857个</div><div class="lbl">占比 35%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 顾客徽章明细 -->
+    <section class="chart-section">
+      <div class="table-header-row">
+        <div class="chart-header" style="margin-bottom:0"><span class="title-bar"></span><span class="section-title">顾客徽章明细</span></div>
+        <span class="view-all">查看全部 ›</span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-cell name" style="color:#666;font-weight:500">顾客</span>
+          <span class="table-cell badge" style="color:#666;font-weight:500">徽章</span>
+          <span class="table-cell level" style="color:#666;font-weight:500">等级</span>
+          <span class="table-cell value" style="color:#666;font-weight:500">成长值</span>
+          <span class="table-cell date" style="color:#666;font-weight:500">更新日期</span>
+        </div>
+        <div class="table-row">
+          <span class="table-cell name">张小明</span>
+          <span class="table-cell badge" style="color:#667eea">🔥 活跃分子</span>
+          <span class="table-cell level"><span class="level-badge silver">银</span></span>
+          <span class="table-cell value">1,250</span>
+          <span class="table-cell date">03-13</span>
+        </div>
+        <div class="table-row">
+          <span class="table-cell name">李小红</span>
+          <span class="table-cell badge" style="color:#9b8ce8">💬 社交达人</span>
+          <span class="table-cell level"><span class="level-badge gold">金</span></span>
+          <span class="table-cell value">3,400</span>
+          <span class="table-cell date">03-12</span>
+        </div>
+        <div class="table-row">
+          <span class="table-cell name">王大伟</span>
+          <span class="table-cell badge" style="color:#ff9c6e">🎁 利益链接者</span>
+          <span class="table-cell level"><span class="level-badge bronze">铜</span></span>
+          <span class="table-cell value">320</span>
+          <span class="table-cell date">03-11</span>
+        </div>
+        <div class="table-row">
+          <span class="table-cell name">赵小芳</span>
+          <span class="table-cell badge" style="color:#69c0ff">📢 传播大使</span>
+          <span class="table-cell level"><span class="level-badge silver">银</span></span>
+          <span class="table-cell value">890</span>
+          <span class="table-cell date">03-10</span>
+        </div>
+        <div class="table-row">
+          <span class="table-cell name">刘小强</span>
+          <span class="table-cell badge" style="color:#95de64">🚀 裂变专家</span>
+          <span class="table-cell level"><span class="level-badge bronze">铜</span></span>
+          <span class="table-cell value">450</span>
+          <span class="table-cell date">03-09</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll('.time-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.time-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+      });
+    });
+    document.querySelectorAll('.filter-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+      });
+    });
+    document.querySelectorAll('.level-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.level-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
