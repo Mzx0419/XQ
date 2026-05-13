@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>成长值趋势详情</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f6fa; min-height: 100vh; padding-bottom: 24px; max-width: 430px; margin: 0 auto; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); position: sticky; top: 0; z-index: 100; }
+    .header-btn { width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,0.2); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #fff; }
+    .header-title { font-size: 17px; font-weight: 600; color: #fff; }
+    .header-right { display: flex; gap: 8px; }
+    .time-filter { display: flex; justify-content: space-around; background: #fff; padding: 12px 16px; border-bottom: 1px solid #e8e8e8; }
+    .time-btn { padding: 6px 16px; font-size: 13px; color: #666; background: transparent; border: none; border-radius: 16px; cursor: pointer; }
+    .time-btn.active { color: #667eea; background: #f0f2ff; font-weight: 500; }
+    .main { padding: 12px; }
+    .chart-section { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+    .chart-header { display: flex; align-items: center; margin-bottom: 12px; }
+    .title-bar { width: 3px; height: 16px; background: #667eea; border-radius: 2px; margin-right: 6px; }
+    .section-title { font-size: 15px; font-weight: 600; color: #333; }
+    .net-growth-grid { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .net-growth-card { flex: 1; min-width: 80px; background: #f8f9ff; border-radius: 10px; padding: 12px; text-align: center; border: 1px solid #e8eaff; }
+    .net-growth-icon { width: 36px; height: 36px; margin: 0 auto 6px; border-radius: 18px; background: #f0f2ff; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .net-growth-card .label { font-size: 11px; color: #999; }
+    .net-growth-card .val { font-size: 18px; font-weight: 700; margin-top: 4px; }
+    .net-growth-card .val.issued { color: #667eea; }
+    .net-growth-card .val.redeemed { color: #a8a4e6; }
+    .net-growth-card .val.net { color: #52c41a; }
+    .net-growth-card .val.net-neg { color: #ff4d4f; }
+    .operator { width: 24px; text-align: center; font-size: 18px; font-weight: 600; color: #999; flex-shrink: 0; }
+    .trend-badge { display: inline-flex; align-items: center; gap: 2px; padding: 2px 6px; border-radius: 4px; margin-top: 4px; font-size: 11px; }
+    .trend-badge.up { background: #f6ffed; color: #52c41a; }
+    .trend-badge.down { background: #fff1f0; color: #ff4d4f; }
+    .chart-card { background: #f8f9ff; border-radius: 10px; padding: 10px; border: 1px solid #e8eaff; overflow-x: auto; }
+    .cycle-bars { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; padding: 0 4px; gap: 4px; }
+    .cycle-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .cycle-bar-group { display: flex; gap: 2px; align-items: flex-end; height: 100px; }
+    .cycle-bar { width: 12px; border-radius: 2px; min-height: 4px; }
+    .cycle-bar.issued { background: #667eea; }
+    .cycle-bar.redeemed { background: #a8a4e6; }
+    .cycle-label { font-size: 10px; color: #999; }
+    .cycle-legend { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; font-size: 10px; color: #666; }
+    .cycle-legend span { display: flex; align-items: center; gap: 4px; }
+    .cycle-legend .dot { width: 8px; height: 8px; border-radius: 2px; }
+    .cycle-stats-row { display: flex; justify-content: space-around; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
+    .cycle-stat-item { text-align: center; }
+    .cycle-stat-item .label { font-size: 11px; color: #999; }
+    .cycle-stat-item .val { font-size: 13px; font-weight: 600; margin-top: 2px; }
+    .expiry-desc { font-size: 11px; color: #999; margin-bottom: 12px; }
+    .expiry-card { background: #fff7e6; border-radius: 10px; padding: 14px; border: 1px solid #ffd591; }
+    .expiry-main { display: flex; align-items: center; }
+    .expiry-icon { width: 48px; height: 48px; border-radius: 24px; background: #fff; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 24px; }
+    .expiry-content .label { font-size: 11px; color: #999; }
+    .expiry-content .val { font-size: 20px; font-weight: 700; color: #fa8c16; margin-top: 4px; }
+    .expiry-divider { height: 1px; background: #ffd591; margin: 12px 0; }
+    .expiry-breakdown { display: flex; justify-content: space-around; }
+    .expiry-breakdown-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    .expiry-dot { width: 8px; height: 8px; border-radius: 4px; }
+    .expiry-breakdown-item .num { font-weight: 600; }
+    .accumulation-card, .per-capita-card { background: #f8f9ff; border-radius: 10px; padding: 14px; border: 1px solid #e8eaff; }
+    .accumulation-main, .per-capita-main { display: flex; align-items: center; margin-bottom: 12px; }
+    .accumulation-icon, .per-capita-icon { width: 48px; height: 48px; border-radius: 24px; background: #fff; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 24px; }
+    .accumulation-content .label, .per-capita-content .label { font-size: 11px; color: #999; }
+    .accumulation-content .val { font-size: 20px; font-weight: 700; color: #667eea; margin-top: 4px; }
+    .per-capita-content .val { color: #764ba2; }
+    .accumulation-stats, .per-capita-stats { display: flex; padding-top: 12px; border-top: 1px solid #e8eaff; }
+    .accumulation-stat, .per-capita-stat { flex: 1; text-align: center; }
+    .accumulation-stat .label, .per-capita-stat .label { font-size: 11px; color: #999; }
+    .accumulation-stat .val, .per-capita-stat .val { font-size: 13px; font-weight: 600; color: #333; margin-top: 2px; }
+    .accumulation-divider, .per-capita-divider { width: 1px; background: #e8eaff; }
+    .val.green { color: #52c41a; }
+    .val.purple { color: #764ba2; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="customer-growth-analysis.html" class="header-btn" aria-label="返回">←</a>
+    <h1 class="header-title">成长值趋势详情</h1>
+    <div class="header-right">
+      <button type="button" class="header-btn" aria-label="日历">📅</button>
+    </div>
+  </header>
+  <div class="time-filter">
+    <button type="button" class="time-btn active">今日</button>
+    <button type="button" class="time-btn">本周</button>
+    <button type="button" class="time-btn">本月</button>
+    <button type="button" class="time-btn">自定义</button>
+  </div>
+  <main class="main">
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">净增长分析</span></div>
+      <div class="net-growth-grid">
+        <div class="net-growth-card">
+          <div class="net-growth-icon">➕</div>
+          <div class="label">今日发放量</div>
+          <div class="val issued">125,680</div>
+          <div class="trend-badge up">↑ 12.5%</div>
+        </div>
+        <div class="operator">−</div>
+        <div class="net-growth-card">
+          <div class="net-growth-icon" style="background:#e8e4ff">➖</div>
+          <div class="label">今日兑换量</div>
+          <div class="val redeemed">89,234</div>
+          <div class="trend-badge up">↑ 8.3%</div>
+        </div>
+        <div class="operator">=</div>
+        <div class="net-growth-card" style="background:#f6ffed;border-color:#b7eb8f">
+          <div class="net-growth-icon" style="background:#d9f7be">📈</div>
+          <div class="label">今日净增长</div>
+          <div class="val net">+36,446</div>
+          <div class="trend-badge down">↓ 5.2%</div>
+        </div>
+      </div>
+    </section>
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">周期规律</span></div>
+      <div class="chart-card">
+        <div class="cycle-bars">
+          <div class="cycle-bar-wrap"><div class="cycle-bar-group"><div class="cycle-bar issued" style="height:52%"></div><div class="cycle-bar redeemed" style="height:37%"></div></div><span class="cycle-label">周一</span></div>
+          <div class="cycle-bar-wrap"><div class="cycle-bar-group"><div class="cycle-bar issued" style="height:61%"></div><div class="cycle-bar redeemed" style="height:43%"></div></div><span class="cycle-label">周二</span></div>
+          <div class="cycle-bar-wrap"><div class="cycle-bar-group"><div class="cycle-bar issued" style="height:56%"></div><div class="cycle-bar redeemed" style="height:45%"></div></div><span class="cycle-label">周三</span></div>
+          <div class="cycle-bar-wrap"><div class="cycle-bar-group"><div class="cycle-bar issued" style="height:71%"></div><div class="cycle-bar redeemed" style="height:50%"></div></div><span class="cycle-label">周四</span></div>
+          <div class="cycle-bar-wrap"><div class="cycle-bar-group"><div class="cycle-bar issued" style="height:65%"></div><div class="cycle-bar redeemed" style="height:49%"></div></div><span class="cycle-label">周五</span></div>
+          <div class="cycle-bar-wrap"><div class="cycle-bar-group"><div class="cycle-bar issued" style="height:81%"></div><div class="cycle-bar redeemed" style="height:63%"></div></div><span class="cycle-label">周六</span></div>
+          <div class="cycle-bar-wrap"><div class="cycle-bar-group"><div class="cycle-bar issued" style="height:74%"></div><div class="cycle-bar redeemed" style="height:54%"></div></div><span class="cycle-label">周日</span></div>
+        </div>
+        <div class="cycle-legend">
+          <span><i class="dot" style="background:#667eea"></i>发放</span>
+          <span><i class="dot" style="background:#a8a4e6"></i>兑换</span>
+        </div>
+        <div class="cycle-stats-row">
+          <div class="cycle-stat-item"><div class="label">平均日发放</div><div class="val" style="color:#667eea">19,811</div></div>
+          <div class="cycle-stat-item"><div class="label">平均日兑换</div><div class="val" style="color:#a8a4e6">14,619</div></div>
+          <div class="cycle-stat-item"><div class="label">发放波动率</div><div class="val" style="color:#fa8c16">45.9%</div></div>
+        </div>
+      </div>
+    </section>
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">有效期预警</span></div>
+      <p class="expiry-desc">未来3个月即将过期的成长值分布</p>
+      <div class="expiry-card">
+        <div class="expiry-main">
+          <div class="expiry-icon">⏱</div>
+          <div class="expiry-content">
+            <div class="label">未来3个月即将过期</div>
+            <div class="val">125,680</div>
+          </div>
+        </div>
+        <div class="expiry-divider"></div>
+        <div class="expiry-breakdown">
+          <div class="expiry-breakdown-item"><span class="expiry-dot" style="background:#ff4d4f"></span><span>7天内</span><span class="num" style="color:#ff4d4f">12,800</span></div>
+          <div class="expiry-breakdown-item"><span class="expiry-dot" style="background:#fa8c16"></span><span>15天内</span><span class="num" style="color:#fa8c16">25,600</span></div>
+          <div class="expiry-breakdown-item"><span class="expiry-dot" style="background:#52c41a"></span><span>30天内</span><span class="num" style="color:#52c41a">48,900</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">累计沉淀量</span></div>
+      <div class="accumulation-card">
+        <div class="accumulation-main">
+          <div class="accumulation-icon">📚</div>
+          <div class="accumulation-content">
+            <div class="label">累计沉淀成长值</div>
+            <div class="val">356,780</div>
+          </div>
+        </div>
+        <div class="accumulation-stats">
+          <div class="accumulation-stat"><div class="label">今日新增沉淀</div><div class="val">+45,600</div></div>
+          <div class="accumulation-divider"></div>
+          <div class="accumulation-stat"><div class="label">预计消耗周期</div><div class="val purple">120 天</div></div>
+          <div class="accumulation-divider"></div>
+          <div class="accumulation-stat"><div class="label">月环比增长</div><div class="val green">↑ 22.5%</div></div>
+        </div>
+      </div>
+    </section>
+    <section class="chart-section">
+      <div class="chart-header"><span class="title-bar"></span><span class="section-title">人均持有量</span></div>
+      <div class="per-capita-card">
+        <div class="per-capita-main">
+          <div class="per-capita-icon">👤</div>
+          <div class="per-capita-content">
+            <div class="label">人均持有成长值</div>
+            <div class="val">145.6</div>
+          </div>
+        </div>
+        <div class="per-capita-stats">
+          <div class="per-capita-stat"><div class="label">活跃用户数</div><div class="val">2,458人</div></div>
+          <div class="per-capita-divider"></div>
+          <div class="per-capita-stat"><div class="label">环比变化</div><div class="val" style="color:#ff4d4f">↓ 3.2%</div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    document.querySelectorAll('.time-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.time-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
